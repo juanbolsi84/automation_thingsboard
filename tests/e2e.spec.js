@@ -89,7 +89,8 @@ test.describe('Create and Delete devices', () => {
 
     test('Create a device through API, delete in UI ', async ({ page }) => {
         // Step 1: Create device via API
-        await createDeviceViaApi('Generator Accelerometer', 'Sensor');
+        const rndDeviceName = `Accelerometer ${Math.floor(Math.random() * 10000) + 1}`;
+        await createDeviceViaApi(rndDeviceName, 'Sensor');
 
         // Step 2: Log in and go to Devices page
         await pm.loginPage.navigate();
@@ -97,8 +98,8 @@ test.describe('Create and Delete devices', () => {
         await pm.homePage.goToDevices();
 
         // Step 3: Delete device via UI
-        await pm.devices.deleteDevice('Name', 'Generator Accelerometer');
-        const isDeleted = await pm.devices.waitForColumn('deleted', 'Generator Accelerator');
+        await pm.devices.deleteDevice('Name', rndDeviceName);
+        const isDeleted = await pm.devices.waitForColumn('deleted', rndDeviceName);
         expect(isDeleted).toBe(true);
 
     });
