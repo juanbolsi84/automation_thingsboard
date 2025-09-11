@@ -61,13 +61,11 @@ test.describe('Create and Delete devices', () => {
         pm = new PomManager(page);
         // Ensure clean state before each test
         await deleteDeviceIfExists('Boiler Thermostat');
-        await deleteDeviceIfExists('Generator Accelerometer');
     });
 
     test.afterEach(async () => {
         // Cleanup after each test
         await deleteDeviceIfExists('Boiler Thermostat');
-        await deleteDeviceIfExists('Generator Accelerometer');
     });
 
     test('Create a device', async ({ page }) => {
@@ -76,14 +74,15 @@ test.describe('Create and Delete devices', () => {
         await pm.homePage.goToDevices();
 
         const newDevice = {
-            name: 'Boiler Thermostat',
+            name: `Thermostat ${Math.floor(Math.random() * 10000) + 1}`,
             label: 'Machine Room',
             assignToCustomer: 'Customer A',
         };
 
         await pm.devices.createDevice(newDevice);
-        const isCreated = await pm.devices.waitForColumn('created', 'Boiler Thermostat');
+        const isCreated = await pm.devices.waitForColumn('created', newDevice.name);
         expect(isCreated).toBe(true);
+        await deleteDeviceIfExists(newDevice.name);
         
     });
 

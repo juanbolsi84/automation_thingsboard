@@ -9,12 +9,17 @@ export default class Devices {
     async createDevice({ name, label = '', profile = 'default', assignToCustomer = '' }) {
         await this.actions.click('role=button >> text=add');
         await this.actions.click('role=menuitem[name="Add new device"]');
+        const nameField = this.actions.page.getByRole('textbox', { name: 'Name' });
+        await nameField.waitFor({ state: 'visible' });
+        await this.actions.click('role=textbox[name="Name"]');
         await this.actions.fill('role=textbox[name="Name"]', name);
         await this.actions.fill('role=textbox[name="Label"]', label);
         await this.actions.selectFromDropdown('role=combobox[name="Device profile"]', profile);
         await this.actions.selectFromDropdown('role=combobox[name="Assign to customer"]', assignToCustomer);
         await this.actions.click('role=button[name="Add"]');
+        const closeButton = await this.actions.page.getByRole('button', { name : 'Close'});
         await this.actions.click('role=button[name="Close"]');
+        await closeButton.waitFor({state: 'detached'});
     }
 
 
