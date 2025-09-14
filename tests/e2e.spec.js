@@ -1,105 +1,55 @@
-import { test, expect, request as pwRequest } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import PomManager from '../Pages/PomManager.js';
+import ApiUtil from '../Utilities/ApiUtil.js';
 
 let pm;
-let apiContext;
-let token;
+let api;
 
 test.describe('Create and Delete devices', () => {
+  test.beforeAll(async () => {
+    api = new ApiUtil();
+    await api.init();
+  });
 
-    test.beforeAll(async () => {
-        // Create isolated API context
-        apiContext = await pwRequest.newContext({
-            baseURL: 'http://localhost:8080', // adjust if needed
-        });
+  test.afterAll(async () => {
+    await api.dispose();
+  });
 
-        // Login and grab token
-        const loginResp = await apiContext.post('/api/auth/login', {
-            data: {
-                username: 'tenant@thingsboard.org',
-                password: 'tenant',
-            },
-        });
-        const body = await loginResp.json();
-        token = body.token;
-    });
+  test.beforeEach(async ({ page }) => {
+    pm = new PomManager(page);
+  });
 
-    test.afterAll(async () => {
-        await apiContext.dispose();
-    });
+  test('Create a device via UI', async ({ page }) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.login('tenant@thingsboard.org', 'tenant');
+    await pm.homePage.goToDevices();
 
-    async function deleteDeviceIfExists(deviceName) {
-        const searchResp = await apiContext.get(
-            `/api/tenant/devices?deviceName=${encodeURIComponent(deviceName)}`,
-            { headers: { 'X-Authorization': `Bearer ${token}` } }
-        );
-        const data = await searchResp.json();
+    const newDevice = {
+      name: `Thermostat ${Math.floor(Math.random() * 10000) + 1}`,
+      label: 'Machine Room',
+      assignToCustomer: 'Customer A',
+    };
 
-        if (data?.id?.id) {
-            await apiContext.delete(`/api/device/${data.id.id}`, {
-                headers: { 'X-Authorization': `Bearer ${token}` },
-            });
-        }
-    }
+    await pm.devices.createDevice(newDevice);
 
-    async function createDeviceViaApi(deviceName, label = '') {
-        const resp = await apiContext.post('/api/device', {
-            headers: { 'X-Authorization': `Bearer ${token}` },
-            data: {
-                name: deviceName,
-                type: 'default', // adjust type if your ThingsBoard instance uses something else
-                label,
-            },
-        });
-        if (!resp.ok()) {
-            throw new Error(`Failed to create device via API: ${resp.status()}`);
-        }
-        return await resp.json();
-    }
+    const isCreated = await pm.devices.waitForColumn('created', newDevice.name);
+    expect(isCreated).toBe(true);
 
-    test.beforeEach(async ({ page }) => {
-        pm = new PomManager(page);
-        // Ensure clean state before each test
-        await deleteDeviceIfExists('Boiler Thermostat');
-    });
+    // Cleanup via API
+    await api.deleteDeviceIfExists(newDevice.name);
+  });
 
-    test.afterEach(async () => {
-        // Cleanup after each test
-        await deleteDeviceIfExists('Boiler Thermostat');
-    });
+  test('Create a device via API, delete via UI', async ({ page }) => {
+    const rndDeviceName = `Accelerometer ${Math.floor(Math.random() * 10000) + 1}`;
+    await api.createDevice(rndDeviceName, 'Sensor');
 
-    test('Create a device', async ({ page }) => {
-        await pm.loginPage.navigate();
-        await pm.loginPage.login('tenant@thingsboard.org', 'tenant');
-        await pm.homePage.goToDevices();
+    await pm.loginPage.navigate();
+    await pm.loginPage.login('tenant@thingsboard.org', 'tenant');
+    await pm.homePage.goToDevices();
 
-        const newDevice = {
-            name: `Thermostat ${Math.floor(Math.random() * 10000) + 1}`,
-            label: 'Machine Room',
-            assignToCustomer: 'Customer A',
-        };
+    await pm.devices.deleteDevice('Name', rndDeviceName);
 
-        await pm.devices.createDevice(newDevice);
-        const isCreated = await pm.devices.waitForColumn('created', newDevice.name);
-        expect(isCreated).toBe(true);
-        await deleteDeviceIfExists(newDevice.name);
-        
-    });
-
-    test('Create a device through API, delete in UI ', async ({ page }) => {
-        // Step 1: Create device via API
-        const rndDeviceName = `Accelerometer ${Math.floor(Math.random() * 10000) + 1}`;
-        await createDeviceViaApi(rndDeviceName, 'Sensor');
-
-        // Step 2: Log in and go to Devices page
-        await pm.loginPage.navigate();
-        await pm.loginPage.login('tenant@thingsboard.org', 'tenant');
-        await pm.homePage.goToDevices();
-
-        // Step 3: Delete device via UI
-        await pm.devices.deleteDevice('Name', rndDeviceName);
-        const isDeleted = await pm.devices.waitForColumn('deleted', rndDeviceName);
-        expect(isDeleted).toBe(true);
-
-    });
+    const isDeleted = await pm.devices.waitForColumn('deleted', rndDeviceName);
+    expect(isDeleted).toBe(true);
+  });
 });
