@@ -10,7 +10,6 @@ Testing ThingsBoard device management (create, assign, delete devices)
 2- Instructions on how to setup ThingsBoard locally: https://thingsboard.io/docs/user-guide/install/docker-windows/?ubuntuThingsboardQueue=inmemory
 
 ## Notes
-1- This automation is designed to run only in Chromium. Other browsers are out of scope for this instance and test execution may fail.
 1- Tests use Playwright API & UI
 2- Custom waits implemented to handle async table updates
 3- Tenant credentials: tenant@thingsboard.org / tenant credentials
