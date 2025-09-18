@@ -32,8 +32,8 @@ test.describe('Create and Delete devices', () => {
 
     await pm.devices.createDevice(newDevice);
 
-    const isCreated = await pm.devices.waitForColumn('created', newDevice.name);
-    expect(isCreated).toBe(true);
+    const rowCreated = await pm.devices.waitForRow('created', newDevice.name);
+    expect(rowCreated).toBe(true);
 
     // Cleanup via API
     await api.deleteDeviceIfExists(newDevice.name);
@@ -49,7 +49,7 @@ test.describe('Create and Delete devices', () => {
 
     await pm.devices.deleteDevice('Name', rndDeviceName);
 
-    const isDeleted = await pm.devices.waitForColumn('deleted', rndDeviceName);
-    expect(isDeleted).toBe(true);
+    const rowDeleted = await pm.devices.waitForRow('deleted', rndDeviceName);
+    expect(rowDeleted).toBe(true);
   });
 });

@@ -65,7 +65,7 @@ export default class Devices {
 
     }
 
-    async waitForColumn(action, valueToCheck) {
+    async waitForRow(action, valueToCheck) {
         for(let i=0; i <= 10; i++){
             const row = await this.findRowByCellValue('Name', valueToCheck);
             if(action === 'created' && row){                
