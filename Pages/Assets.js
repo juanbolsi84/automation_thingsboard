@@ -3,35 +3,35 @@ import CommonActions from "../Utilities/CommonActions";
 export default class Assets {
     constructor(page) {
         this.actions = new CommonActions(page);
-    }
+
+        // Selectors
+        this.addAssetPlusBtn = 'role=button >> text="add"';
+        this.addAssetOption = 'role=menuitem >> text="Add new asset"';
+        this.dialogLocator = 'role=dialog >> text="Add asset"';
+        this.assetName = 'role=textbox[name="Name"]';
+        this.assetLabel = 'role=textbox[name="Label"]';
+        this.assetProfileLocator = 'role=combobox[name="Asset profile"]';
+        this.assignToCustomerLocator = 'role=combobox[name="Assign to customer"]';
+        this.assetDescription = 'role=textbox[name="Description"]';
+        this.addAssetBtn = 'role=button[name="Add"]';
+
+    } 
 
     async createAsset({ name, label = '', assetProfile = 'default', assignToCustomer = '', description = '' }) {   
-        // click + button
-        await this.actions.click('role=button >> text="add"');
-        //click add new asset
-        await this.actions.click('role=menuitem >> text="Add new asset"');
+        
+        await this.actions.click(this.addAssetPlusBtn); // click + button
+        await this.actions.click(this.addAssetOption); //click add new asset
 
         // wait for dialog to be visible
-        const dialogLocator = this.actions.page.locator('role=dialog >> text="Add asset"');
+        const dialogLocator = this.actions.page.locator(this.dialogLocator);
         await dialogLocator.waitFor({ state: 'visible' });
 
-        //fill name
-        await this.actions.fill('role=textbox[name="Name"]',name);
-
-        //fill label
-        await this.actions.fill('role=textbox[name="Label"]',label);
-
-        //fill assetProfile
-        await this.actions.selectFromDropdown('role=combobox[name="Asset profile"]', assetProfile);
-
-        //fill assign to customer
-        await this.actions.selectFromDropdown('role=combobox[name="Assign to customer"]', assignToCustomer);
-
-        //fill description
-        await this.actions.fill('role=textbox[name="Description"]', description);
-
-        //click add button
-        await this.actions.click('role=button[name="Add"]');
+        await this.actions.fill(this.assetName,name); //fill name        
+        await this.actions.fill(this.assetLabel,label); //fill label        
+        await this.actions.selectFromDropdown(this.assetProfileLocator, assetProfile); //fill assetProfile        
+        await this.actions.selectFromDropdown(this.assignToCustomerLocator, assignToCustomer); //fill assign to customer      
+        await this.actions.fill(this.assetDescription, description); //fill description
+        await this.actions.click(this.addAssetBtn); //click add button
 
     }
 
