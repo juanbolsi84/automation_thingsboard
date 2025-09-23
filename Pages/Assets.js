@@ -15,29 +15,46 @@ export default class Assets {
         this.assetDescription = 'role=textbox[name="Description"]';
         this.addAssetBtn = 'role=button[name="Add"]';
 
-    } 
+    }
 
-    async createAsset({ name, label = '', assetProfile = 'default', assignToCustomer = '', description = '' }) {   
-        
+    async createAsset({ name, label = '', assetProfile = 'default', assignToCustomer = '', description = '' }) {
+
         await this.actions.click(this.addAssetPlusBtn); // click + button
         await this.actions.click(this.addAssetOption); //click add new asset
 
-        // wait for dialog to be visible
-        const dialogLocator = this.actions.page.locator(this.dialogLocator);
+        const dialogLocator = this.actions.page.locator(this.dialogLocator); // wait for dialog to be visible
         await dialogLocator.waitFor({ state: 'visible' });
 
-        await this.actions.fill(this.assetName,name); //fill name        
-        await this.actions.fill(this.assetLabel,label); //fill label        
+        await this.actions.fill(this.assetName, name); //fill name        
+        await this.actions.fill(this.assetLabel, label); //fill label        
         await this.actions.selectFromDropdown(this.assetProfileLocator, assetProfile); //fill assetProfile        
-        await this.actions.selectFromDropdown(this.assignToCustomerLocator, assignToCustomer); //fill assign to customer      
+        
+        if (assignToCustomer != '') {
+            await this.actions.page.locator(this.assignToCustomerLocator).click();
+            let optionIndex = -1;
+            let options = [];
+            for (let i = 0; i < 10; i++) {
+                options = await this.actions.page.locator('mat-option').allTextContents(); // Get all option texts
+                optionIndex = options.findIndex(opt => opt.trim() === assignToCustomer); // Find index of the desired option
+
+                if (optionIndex != -1) {
+                    await this.actions.page.locator('mat-option').nth(optionIndex).click(); // Click the matched option
+                }
+
+                await this.actions.page.waitForTimeout(1000);
+
+            }
+
+        }
+
         await this.actions.fill(this.assetDescription, description); //fill description
         await this.actions.click(this.addAssetBtn); //click add button
 
     }
 
-    async findRowByCellValue(columnName, valueToCheck){
-        
-        const headersLocator = 'mat-header-cell'; 
+    async findRowByCellValue(columnName, valueToCheck) {
+
+        const headersLocator = 'mat-header-cell';
         const rowsLocator = 'mat-row';
 
         const headers = await this.actions.page.locator(headersLocator).allTextContents();
@@ -46,17 +63,17 @@ export default class Assets {
         const rows = await this.actions.page.locator(rowsLocator);
         const rowCount = rows.count();
 
-        for(let i=0; i < rowCount; i++){
+        for (let i = 0; i < rowCount; i++) {
             const cellText = await rows.nth(i).locator('mat-cell').nth(colIndex).textContent();
-            if(cellText == valueToCheck){
+            if (cellText == valueToCheck) {
                 return rows.nth(i);
-            }            
+            }
         }
 
         return null;
-    } 
+    }
 
-    async deleteAsset(columnName, name){
+    async deleteAsset(columnName, name) {
         const rowLocator = await this.findRowByCellValue(columnName, name);
         const deleteBtn = await rowLocator.locator('button:has-text("delete")')
         await deleteBtn.click();
@@ -64,12 +81,12 @@ export default class Assets {
 
     }
 
-    async waitForRow(action, valueToCheck){
-        for(let i=0; i <= 10; i++){
+    async waitForRow(action, valueToCheck) {
+        for (let i = 0; i <= 10; i++) {
             const row = await this.findRowByCellValue('Name', valueToCheck);
-            if(action === 'created' && row){                
+            if (action === 'created' && row) {
                 return true;
-            } else if(action === 'deleted' && !row) {                
+            } else if (action === 'deleted' && !row) {
                 return true;
             }
             await this.actions.page.waitForTimeout(1000);

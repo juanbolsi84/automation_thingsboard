@@ -9,7 +9,7 @@ test.beforeEach(async ({ page }) => {
     pm = new PomManager(page);
   });
 
-test("Create a new Asset", async ({page}) => {
+test.only("Create a new Asset", async ({page}) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login('tenant@thingsboard.org', 'tenant');
     await pm.homePage.goToAssets();
