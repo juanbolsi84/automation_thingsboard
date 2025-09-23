@@ -29,19 +29,22 @@ export default class Assets {
         await this.actions.fill(this.assetLabel, label); //fill label        
         await this.actions.selectFromDropdown(this.assetProfileLocator, assetProfile); //fill assetProfile        
         
+        // Angular Material backdrop sometimes blocks clicks.
         if (assignToCustomer != '') {
+            
             await this.actions.page.locator(this.assignToCustomerLocator).click();
             let optionIndex = -1;
             let options = [];
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < 30; i++) {
                 options = await this.actions.page.locator('mat-option').allTextContents(); // Get all option texts
                 optionIndex = options.findIndex(opt => opt.trim() === assignToCustomer); // Find index of the desired option
 
                 if (optionIndex != -1) {
                     await this.actions.page.locator('mat-option').nth(optionIndex).click(); // Click the matched option
+                    
                 }
 
-                await this.actions.page.waitForTimeout(1000);
+                await this.actions.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
 
             }
 
