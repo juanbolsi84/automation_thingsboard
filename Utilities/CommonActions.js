@@ -39,20 +39,22 @@ export default class CommonActions {
     async selectFromDropdown(inputLocator, optionText) {
         // Angular Material backdrop sometimes blocks clicks, therefore the need of this routine
         await this.page.locator(inputLocator).click();
-            let optionIndex = -1;
-            let options = [];
-            for (let i = 0; i < 30; i++) {
-                options = await this.page.locator('mat-option').allTextContents(); // Get all option texts
-                optionIndex = options.findIndex(opt => opt.trim() === optionText); // Find index of the desired option
+        let optionIndex = -1;
+        let options = [];
+        for (let i = 0; i < 30; i++) {
+            options = await this.page.locator('mat-option').allTextContents(); // Get all option texts
+            optionIndex = options.findIndex(opt => opt.trim() === optionText); // Find index of the desired option
 
-                if (optionIndex != -1) {
-                    await this.page.locator('mat-option').nth(optionIndex).click(); // Click the matched option
-                    
-                }
-
-                await this.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
-
+            if (optionIndex != -1) {
+                const optionLocator = this.page.locator('mat-option').nth(optionIndex); //Click on the option from the dropdown
+                await optionLocator.click(); // Click the matched option
+                await optionLocator.waitFor({ state: 'hidden', timeout: 5000 }); // Wait until the option disappears (dropdown closed)
+                return; // Exit after success
             }
+
+            await this.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
+
+        }
     }
 
 
