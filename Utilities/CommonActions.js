@@ -37,8 +37,22 @@ export default class CommonActions {
     }
 
     async selectFromDropdown(inputLocator, optionText) {
-        await this.click(inputLocator);  // open dropdown
-        await this.click(`role=option[name="${optionText}"]`);  // select option
+        // Angular Material backdrop sometimes blocks clicks, therefore the need of this routine
+        await this.page.locator(inputLocator).click();
+            let optionIndex = -1;
+            let options = [];
+            for (let i = 0; i < 30; i++) {
+                options = await this.page.locator('mat-option').allTextContents(); // Get all option texts
+                optionIndex = options.findIndex(opt => opt.trim() === optionText); // Find index of the desired option
+
+                if (optionIndex != -1) {
+                    await this.page.locator('mat-option').nth(optionIndex).click(); // Click the matched option
+                    
+                }
+
+                await this.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
+
+            }
     }
 
 
