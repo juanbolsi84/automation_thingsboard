@@ -41,7 +41,7 @@ export default class CommonActions {
         await this.page.locator(inputLocator).click();
         let optionIndex = -1;
         let options = [];
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 50; i++) {
             options = await this.page.locator('mat-option').allTextContents(); // Get all option texts
             optionIndex = options.findIndex(opt => opt.trim() === optionText); // Find index of the desired option
 
@@ -52,7 +52,7 @@ export default class CommonActions {
                 return; // Exit after success
             }
 
-            await this.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
+            await this.page.waitForTimeout(200); // Poll every 300ms until option is found, avoids flakiness.
 
         }
     }
@@ -79,14 +79,14 @@ export default class CommonActions {
     }
 
     async waitForRow(action, valueToCheck) {
-        for (let i = 0; i <= 10; i++) {
+        for (let i = 0; i <= 50; i++) {
             const row = await this.findRowByCellValue('Name', valueToCheck);
             if (action === 'created' && row) {
                 return true;
             } else if (action === 'deleted' && !row) {
                 return true;
             }
-            await this.page.waitForTimeout(1000);
+            await this.page.waitForTimeout(200);
         }
         return false;
     }

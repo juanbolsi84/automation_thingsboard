@@ -18,6 +18,7 @@ export default class Assets {
         // Selector for deleteAsset
         this.deleteAssetBtn = 'button:has-text("delete")';
         this.confirmDelete = 'role=button[name="Yes"]';
+        this.confirmDeleteDialog = '.cdk-overlay-container';
 
 
     }
@@ -36,6 +37,7 @@ export default class Assets {
         }
         await this.actions.fill(this.assetDescription, description); //fill description
         await this.actions.click(this.addAssetBtn); //click add button
+        await this.actions.page.locator(this.dialogLocator).waitFor({state:'hidden'});
 
     }
 
@@ -44,6 +46,7 @@ export default class Assets {
         const deleteBtn = await rowLocator.locator(this.deleteAssetBtn);
         await deleteBtn.click();
         await this.actions.click(this.confirmDelete);
+        await this.actions.page.locator(this.confirmDeleteDialog).waitFor({state:'hidden'});
 
     }
 

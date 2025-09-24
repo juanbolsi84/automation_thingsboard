@@ -20,6 +20,7 @@ export default class Devices {
         // Selector for deleteAsset
         this.deleteDeviceBtn = 'button:has-text("delete")';
         this.confirmDelete = 'role=button[name="Yes"]';
+        this.confirmDeleteDialog = '.cdk-overlay-container';
 
 
     }
@@ -29,7 +30,7 @@ export default class Devices {
         await this.actions.click(this.addDeviceOption);
         const dialogLocator = this.actions.page.locator(this.dialogLocator);
         await dialogLocator.waitFor({state:'visible'});
-        await this.actions.page.locator(this.deviceName).click(); // This click before filling the field makes tests more reliable. Without it, it may not fill the field reliably
+        await this.actions.page.locator(this.deviceName).click(); // This click before filling the field makes tests stable. Without it, it may not fill the field reliably
         await this.actions.fill(this.deviceName, name);
         await this.actions.fill(this.deviceLabel, label);
         await this.actions.selectFromDropdown(this.deviceProfileLocator, profile);
@@ -39,6 +40,8 @@ export default class Devices {
         await this.actions.fill(this.deviceDescription, description); 
         await this.actions.click(this.addDeviceBtn);
         await this.actions.click(this.closeButton);
+        await this.actions.page.locator(this.dialogLocator).waitFor({state:'hidden'});
+
     }
     
     async deleteDevice(columnName, value) {
@@ -54,6 +57,8 @@ export default class Devices {
 
         // Confirm deletion in the dialog
         await this.actions.click(this.confirmDelete);
+        await this.actions.page.locator(this.confirmDeleteDialog).waitFor({state:'hidden'});
+        
 
     }
 
