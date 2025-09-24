@@ -57,5 +57,39 @@ export default class CommonActions {
         }
     }
 
+    async findRowByCellValue(columnName, valueToCheck) {
+
+        const headersLocator = 'mat-header-cell';
+        const rowsLocator = 'mat-row';
+
+        const headers = await this.page.locator(headersLocator).allTextContents();
+        const colIndex = headers.findIndex(h => h.trim() === columnName);
+
+        const rows = await this.page.locator(rowsLocator);
+        const rowCount = await rows.count();
+
+        for (let i = 0; i < rowCount; i++) {
+            const cellText = await rows.nth(i).locator('mat-cell').nth(colIndex).textContent();
+            if (cellText == valueToCheck) {
+                return rows.nth(i);
+            }
+        }
+
+        return null;
+    }
+
+    async waitForRow(action, valueToCheck) {
+        for (let i = 0; i <= 10; i++) {
+            const row = await this.findRowByCellValue('Name', valueToCheck);
+            if (action === 'created' && row) {
+                return true;
+            } else if (action === 'deleted' && !row) {
+                return true;
+            }
+            await this.page.waitForTimeout(1000);
+        }
+        return false;
+    }
+
 
 }

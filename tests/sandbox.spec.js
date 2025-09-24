@@ -15,10 +15,11 @@ test.only("Create a new Asset", async ({page}) => {
     await pm.homePage.goToAssets();
     const newAsset = {
         name: `Boiler ${Math.floor(Math.random() * 10000) + 1}`,
-        assignToCustomer: 'Customer A',
+        assignToCustomer: 'Customer B',
         description: 'This is a brief description of the asset'
     }
     await pm.assets.createAsset(newAsset);
-    await pm.assets.waitForRow('created', newAsset.name);
+    const assetCreated = await pm.assets.actions.waitForRow('created', newAsset.name);
+    await expect(assetCreated).toBe(true);
     
 })
