@@ -43,7 +43,7 @@ export default class CommonActions {
         let options = [];
         for (let i = 0; i < 50; i++) {
             options = await this.page.locator('mat-option').allTextContents(); // Get all option texts
-            optionIndex = options.findIndex(opt => opt.trim() === optionText); // Find index of the desired option
+            optionIndex = await options.findIndex(opt => opt.trim() === optionText); // Find index of the desired option
 
             if (optionIndex != -1) {
                 const optionLocator = this.page.locator('mat-option').nth(optionIndex); //Click on the option from the dropdown
