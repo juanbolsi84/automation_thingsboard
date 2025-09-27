@@ -68,7 +68,7 @@ test.describe('Create and delete assets', () => {
     pm = new PomManager(page);
   });
 
-  test('Create new asset', async ({ page }) => {
+  test('Create an asset via API, delete via UI', async ({ page }) => {
     
     // Go to assets page
     await pm.loginPage.navigate();
