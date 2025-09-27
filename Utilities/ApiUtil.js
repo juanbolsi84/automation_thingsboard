@@ -33,12 +33,12 @@ export default class ApiUtil {
     }
   }
 
-  async createDevice(deviceName, label = '') {
+  async createDevice(deviceName, type = 'default', label = '') {
     const resp = await this.apiContext.post('/api/device', {
       headers: { 'X-Authorization': `Bearer ${this.token}` },
       data: {
         name: deviceName,
-        type: 'default',
+        type,
         label,
       },
     });
@@ -61,6 +61,28 @@ export default class ApiUtil {
       await this.apiContext.delete(`/api/device/${data.id.id}`, {
         headers: { 'X-Authorization': `Bearer ${this.token}` },
       });
+    }
+  }
+
+  async createAsset(assetName, type = 'default', label = '') {
+    await this.apiContext.post('/api/asset', {
+      headers: { 'X-Authorization': `Bearer ${this.token}` }, data: {
+        name: assetName,
+        type,
+        label,
+      }
+    }
+    )
+  }
+
+  async deleteAssetIfExists(assetName) {
+    const searchResp = await this.apiContext.get(`/api/tenant/assets?assetName=${encodeURIComponent(assetName)}`, {
+      headers: { 'X-Authorization': `Bearer ${this.token}` },
+    });
+    const data = await searchResp.json();
+    if(data?.id?.id){
+      await this.apiContext.delete(`/api/asset/${encodeURIComponent(data.id.id)}`, {headers: {'X-Authorization': `Bearer ${this.token}`}});
+
     }
   }
 }
