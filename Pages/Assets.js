@@ -29,6 +29,7 @@ export default class Assets {
         await this.actions.click(this.addAssetOption); //click add new asset
         const dialogLocator = this.actions.page.locator(this.dialogLocator); // wait for dialog to be visible
         await dialogLocator.waitFor({ state: 'visible' });
+        await this.actions.click(this.assetName); // this makes the tests more stable as sometimes it fills too fast
         await this.actions.fill(this.assetName, name); //fill name        
         await this.actions.fill(this.assetLabel, label); //fill label        
         await this.actions.selectFromDropdown(this.assetProfileLocator, assetProfile); //fill assetProfile        
