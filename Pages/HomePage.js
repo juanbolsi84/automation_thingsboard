@@ -11,7 +11,7 @@ export default class HomePage {
 
     }
 
-    async goToAssets(){
+    async goToAssets() {
         await this.actions.click('role=link[name="Assets"]');
     }
 }

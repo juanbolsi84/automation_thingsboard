@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, testInfo } from '@playwright/test';
 import PomManager from '../Pages/PomManager.js';
 import ApiUtil from '../Utilities/ApiUtil.js';
 import AuthUtil from '../Utilities/AuthUtil.js';
@@ -12,13 +12,21 @@ test.beforeAll(async () => {
   await api.init();
 });
 
-test.beforeEach(async ({ page, baseURL }) => {
+test.beforeEach(async ({ page, baseURL }, testInfo) => {
+  if(testInfo.title != 'Manual login'){
   // 1) Login via API (delegated to AuthUtil)
   const auth = new AuthUtil(page, baseURL);
   await auth.login();
+  }
 
   // 2) Initialize Page Object Manager
   pm = new PomManager(page);
+});
+
+test('Manual login', async({page}) => {
+  await pm.loginPage.navigate();
+  await pm.loginPage.login(process.env.TB_USERNAME || 'tenant@thingsboard.org', process.env.TB_PASSWORD || 'tenant');
+  await expect(page).toHaveTitle('ThingsBoard | Home');
 });
 
 test.describe('Devices', () => {
