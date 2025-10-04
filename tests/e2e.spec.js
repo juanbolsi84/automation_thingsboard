@@ -2,6 +2,8 @@ import { test, expect, testInfo } from '@playwright/test';
 import PomManager from '../Pages/PomManager.js';
 import ApiUtil from '../Utilities/ApiUtil.js';
 import AuthUtil from '../Utilities/AuthUtil.js';
+import MockUtil from '../Utilities/MockUtil.js';
+
 
 let pm;
 let api;
@@ -91,3 +93,26 @@ test.describe('Assets', () => {
     expect(assetDeleted).toBe(true);
   });
 });
+
+
+
+test('Devices page shows 14 mocked devices with pagination', async ({ page }) => {
+    const pm = new PomManager(page);
+    const mock = new MockUtil(page);
+
+    // Step 1: Register the mock BEFORE navigating
+    await mock.mockDevicesPaginated();
+
+    // Step 2: Go to Devices page
+    await pm.homePage.goToDevices();
+
+    // Step 3: Verify first 10 devices on page 1
+    await expect(page.locator('mat-row.mat-mdc-row')).toHaveCount(10);
+
+    // Step 4: Click "Next" page
+    await page.getByRole('button', { name: 'Next page' }).click();
+
+    // Step 5: Verify remaining 4 devices on page 2
+    await expect(page.locator('mat-row.mat-mdc-row')).toHaveCount(4);
+});
+
