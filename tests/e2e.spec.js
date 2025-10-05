@@ -1,7 +1,7 @@
-import { test, expect, testInfo } from '@playwright/test';
+import { test } from '../Utilities/Fixtures.js';
+import { expect } from '@playwright/test';
 import PomManager from '../Pages/PomManager.js';
 import ApiUtil from '../Utilities/ApiUtil.js';
-import AuthUtil from '../Utilities/AuthUtil.js';
 import MockUtil from '../Utilities/MockUtil.js';
 
 
@@ -15,13 +15,7 @@ test.beforeAll(async () => {
 });
 
 test.beforeEach(async ({ page, baseURL }, testInfo) => {
-  if(testInfo.title != 'Manual login'){
-  // 1) Login via API (delegated to AuthUtil)
-  const auth = new AuthUtil(page, baseURL);
-  await auth.login();
-  }
-
-  // 2) Initialize Page Object Manager
+  // Initialize Page Object Manager
   pm = new PomManager(page);
 });
 
@@ -32,7 +26,7 @@ test('Manual login', async({page}) => {
 });
 
 test.describe('Devices', () => {
-  test('Create a device via UI', async () => {
+  test('Create a device via UI', async ({auth}) => {
     await pm.homePage.goToDevices();
 
     const newDevice = {
@@ -50,7 +44,7 @@ test.describe('Devices', () => {
     await api.deleteDeviceIfExists(newDevice.name);
   });
 
-  test('Create a device via API, delete via UI', async () => {
+  test('Create a device via API, delete via UI', async ({auth}) => {
     const rndDeviceName = `Accelerometer ${Math.floor(Math.random() * 10000) + 1}`;
     await api.createDevice(rndDeviceName, 'Sensor');
 
@@ -63,7 +57,7 @@ test.describe('Devices', () => {
 });
 
 test.describe('Assets', () => {
-  test('Create an asset via UI, delete via API', async () => {
+  test('Create an asset via UI, delete via API', async ({auth}) => {
     await pm.homePage.goToAssets();
 
     const newAsset = {
@@ -81,7 +75,7 @@ test.describe('Assets', () => {
     await api.deleteAssetIfExists(newAsset.name);
   });
 
-  test('Create an asset via API, delete via UI', async () => {
+  test('Create an asset via API, delete via UI', async ({auth}) => {
     const newAssetName = `Infrared ${Math.floor(Math.random() * 10000) + 1}`;
     await api.createAsset(newAssetName);
 
@@ -96,7 +90,7 @@ test.describe('Assets', () => {
 
 
 
-test('Devices page shows 14 mocked devices with pagination', async ({ page }) => {
+test('Devices page shows 14 mocked devices with pagination', async ({ page, auth }) => {
     const pm = new PomManager(page);
     const mock = new MockUtil(page);
 
@@ -115,4 +109,3 @@ test('Devices page shows 14 mocked devices with pagination', async ({ page }) =>
     // Step 5: Verify remaining 4 devices on page 2
     await expect(page.locator('mat-row.mat-mdc-row')).toHaveCount(4);
 });
-

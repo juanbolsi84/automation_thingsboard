@@ -48,7 +48,7 @@ export default class AuthUtil {
     }, { t: body.token, tExp: jwtExpMs, r: body.refreshToken, rExp: refreshExpMs });
 
     // 4) Navigate to home page (ThingsBoard will read tokens immediately)
-    await this.page.goto(process.env.TB_HOMEPAGE || this.baseURL, { waitUntil: 'networkidle' });
+    await this.page.goto(process.env.TB_HOMEPAGE || this.baseURL);
 
     /* 5) Optional debug: verify localStorage
     const ls = await this.page.evaluate(() => ({
