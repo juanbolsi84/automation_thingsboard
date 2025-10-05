@@ -17,12 +17,13 @@ export default class Devices {
         this.addDeviceBtn = 'role=button[name="Add"]';
         this.closeButton = 'role=button[name="Close"]';
 
-        // Selector for deleteAsset
+        // Selectors for deleteAsset
         this.deleteDeviceBtn = 'button:has-text("delete")';
         this.confirmDelete = 'role=button[name="Yes"]';
         this.confirmDeleteDialog = '.cdk-overlay-container';
 
-
+        // Selectors for mock tests
+        this.nextButtonLocator = 'role=button[name="Next page"]'
     }
 
     async createDevice({ name, label = '', profile = 'default', assignToCustomer = '', description = '' }) {
@@ -58,8 +59,10 @@ export default class Devices {
         // Confirm deletion in the dialog
         await this.actions.click(this.confirmDelete);
         await this.actions.page.locator(this.confirmDeleteDialog).waitFor({state:'hidden'});
-        
+    }
 
+    async clickNextButton(){
+        await this.actions.page.locator(this.nextButtonLocator).click();
     }
 
     

@@ -1,6 +1,11 @@
 export default class CommonActions {
     constructor(page) {
         this.page = page;
+        this.optionsLocator = 'mat-option';
+        this.headersLocator = 'mat-header-cell';
+        this.rowsLocator = 'mat-row';
+        this.cellLocator = 'mat-cell'
+    
     }
 
     async navigate(url) {
@@ -42,11 +47,11 @@ export default class CommonActions {
         let optionIndex = -1;
         let options = [];
         for (let i = 0; i < 50; i++) {
-            options = await this.page.locator('mat-option').allTextContents(); // Get all option texts
+            options = await this.page.locator(this.optionsLocator).allTextContents(); // Get all option texts
             optionIndex = await options.findIndex(opt => opt.trim() === optionText); // Find index of the desired option
 
             if (optionIndex != -1) {
-                const optionLocator = this.page.locator('mat-option').nth(optionIndex); //Click on the option from the dropdown
+                const optionLocator = this.page.locator(this.optionsLocator).nth(optionIndex); //Click on the option from the dropdown
                 await optionLocator.click(); // Click the matched option
                 await optionLocator.waitFor({ state: 'hidden', timeout: 5000 }); // Wait until the option disappears (dropdown closed)
                 return; // Exit after success
@@ -59,17 +64,14 @@ export default class CommonActions {
 
     async findRowByCellValue(columnName, valueToCheck) {
 
-        const headersLocator = 'mat-header-cell';
-        const rowsLocator = 'mat-row';
-
-        const headers = await this.page.locator(headersLocator).allTextContents();
+        const headers = await this.page.locator(this.headersLocator).allTextContents();
         const colIndex = headers.findIndex(h => h.trim() === columnName);
 
-        const rows = await this.page.locator(rowsLocator);
+        const rows = await this.page.locator(this.rowsLocator);
         const rowCount = await rows.count();
 
         for (let i = 0; i < rowCount; i++) {
-            const cellText = await rows.nth(i).locator('mat-cell').nth(colIndex).textContent();
+            const cellText = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
             if (cellText == valueToCheck) {
                 return rows.nth(i);
             }

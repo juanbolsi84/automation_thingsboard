@@ -90,8 +90,7 @@ test.describe('Assets', () => {
 
 
 
-test('Devices page shows 14 mocked devices with pagination', async ({ page, auth }) => {
-    const pm = new PomManager(page);
+test.only('Devices page shows 14 mocked devices with pagination', async ({ page, auth }) => {
     const mock = new MockUtil(page);
 
     // Step 1: Register the mock BEFORE navigating
@@ -101,11 +100,11 @@ test('Devices page shows 14 mocked devices with pagination', async ({ page, auth
     await pm.homePage.goToDevices();
 
     // Step 3: Verify first 10 devices on page 1
-    await expect(page.locator('mat-row.mat-mdc-row')).toHaveCount(10);
+    await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(10);
 
     // Step 4: Click "Next" page
-    await page.getByRole('button', { name: 'Next page' }).click();
+    await pm.devices.clickNextButton();
 
     // Step 5: Verify remaining 4 devices on page 2
-    await expect(page.locator('mat-row.mat-mdc-row')).toHaveCount(4);
+    await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(4);
 });
