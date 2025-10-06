@@ -4,27 +4,26 @@ import CommonActions from "../Utilities/CommonActions.js";
 export default class Devices {
     constructor(page) {
         this.actions = new CommonActions(page);
-
-        // Selectors for createDevice
-        this.addDevicePlusBtn = 'role=button >> text=add';
-        this.addDeviceOption = 'role=menuitem[name="Add new device"]';
-        this.dialogLocator = 'role=dialog >> text="Add new device"';
-        this.deviceName = 'role=textbox[name="Name"]';
-        this.deviceLabel = 'role=textbox[name="Label"]';
-        this.deviceProfileLocator = 'role=combobox[name="Device profile"]';
-        this.assignToCustomerLocator = 'role=combobox[name="Assign to customer"]';
-        this.deviceDescription ='role=textbox[name="Description"]';
-        this.addDeviceBtn = 'role=button[name="Add"]';
-        this.closeButton = 'role=button[name="Close"]';
-
-        // Selectors for deleteAsset
-        this.deleteDeviceBtn = 'button:has-text("delete")';
-        this.confirmDelete = 'role=button[name="Yes"]';
-        this.confirmDeleteDialog = '.cdk-overlay-container';
-
-        // Selectors for mock tests
-        this.nextButtonLocator = 'role=button[name="Next page"]'
     }
+
+    // Getters for locators
+    get addDevicePlusBtn() {return 'role=button >> text=add'};
+    get addDeviceOption() {return 'role=menuitem[name="Add new device"]'};
+    get dialogLocator() {return 'role=dialog >> text="Add new device"'};
+    get deviceName() {return 'role=textbox[name="Name"]'};
+    get deviceLabel() {return 'role=textbox[name="Label"]'};
+    get deviceProfileLocator() {return 'role=combobox[name="Device profile"]'}; 
+    get assignToCustomerLocator() {return 'role=combobox[name="Assign to customer"]'};
+    get deviceDescription() {return 'role=textbox[name="Description"]'};
+    get addDeviceBtn() {return 'role=button[name="Add"]'};
+    get closeButton() {return 'role=button[name="Close"]'};
+
+    get deleteDeviceBtn() {return 'button:has-text("delete")'};
+    get confirmDelete() {return 'role=button[name="yes]'};
+    get confirmDeleteDialog() {return '.cdk-overlay-container'};
+    
+    get nextButtonLocator() {return 'role=button[name="Next page"]'};
+
 
     async createDevice({ name, label = '', profile = 'default', assignToCustomer = '', description = '' }) {
         await this.actions.click(this.addDevicePlusBtn);
@@ -33,6 +32,7 @@ export default class Devices {
         await dialogLocator.waitFor({state:'visible'});
         await this.actions.page.locator(this.deviceName).click(); // This click before filling the field makes tests stable. Without it, it may not fill the field reliably
         await this.actions.fill(this.deviceName, name);
+        // Add an if statement to fill again if not properly filled on the first attempt
         await this.actions.fill(this.deviceLabel, label);
         await this.actions.selectFromDropdown(this.deviceProfileLocator, profile);
         if(assignToCustomer != ''){
@@ -64,9 +64,5 @@ export default class Devices {
     async clickNextButton(){
         await this.actions.page.locator(this.nextButtonLocator).click();
     }
-
-    
-
-
 
 }

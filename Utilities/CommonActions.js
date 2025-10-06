@@ -1,12 +1,13 @@
 export default class CommonActions {
     constructor(page) {
         this.page = page;
-        this.optionsLocator = 'mat-option';
-        this.headersLocator = 'mat-header-cell';
-        this.rowsLocator = 'mat-row';
-        this.cellLocator = 'mat-cell'
-    
     }
+
+    // Getters for table element locators
+    get optionsLocator() {return 'mat-option'};
+    get headersLocator() {return 'mat-header-cell'};
+    get rowsLocator() {return 'mat-row'};
+    get cellLocator() {return 'mat-cell'};
 
     async navigate(url) {
         await this.page.goto(url);
