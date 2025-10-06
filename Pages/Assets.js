@@ -4,7 +4,7 @@ export default class Assets {
     constructor(page) {
         this.actions = new CommonActions(page);
 
-        // Selectors for createAsset
+        /* // Selectors for createAsset
         this.addAssetPlusBtn = 'role=button >> text="add"';
         this.addAssetOption = 'role=menuitem >> text="Add new asset"';
         this.dialogLocator = 'role=dialog >> text="Add asset"';
@@ -18,10 +18,23 @@ export default class Assets {
         // Selector for deleteAsset
         this.deleteAssetBtn = 'button:has-text("delete")';
         this.confirmDelete = 'role=button[name="Yes"]';
-        this.confirmDeleteDialog = '.cdk-overlay-container';
-
+        this.confirmDeleteDialog = '.cdk-overlay-container'; */
 
     }
+
+    get addAssetPlusBtn() {return 'role=button >> text="add"'};
+    get addAssetOption() {return 'role=menuitem >> text="Add new asset"'};
+    get dialogLocator() {return 'role=dialog >> text="Add asset"'};
+    get assetName() {return 'role=textbox[name="Name"]'};
+    get assetLabel() {return 'role=textbox[name="Label"]'};
+    get assetProfileLocator() {return 'role=combobox[name="Asset profile"]'};
+    get assignToCustomerLocator() {return 'role=combobox[name="Assign to customer"]'};
+    get assetDescription() {return 'role=textbox[name="Description"]'};
+    get addAssetBtn() {return 'role=button[name="Add"]'};
+
+    get deleteAssetBtn() {return 'button:has-text("delete")'};
+    get confirmDelete() {return 'role=button[name="Yes"]'};
+    get confirmDeleteDialog() {return '.cdk-overlay-container'};
 
     async createAsset({ name, label = '', assetProfile = 'default', assignToCustomer = '', description = '' }) {
 

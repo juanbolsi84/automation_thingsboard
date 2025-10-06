@@ -90,7 +90,7 @@ test.describe('Assets', () => {
 
 
 
-test.only('Devices page shows 14 mocked devices with pagination', async ({ page, auth }) => {
+test('Devices page shows 14 mocked devices with pagination', async ({ page, auth }) => {
     const mock = new MockUtil(page);
 
     // Step 1: Register the mock BEFORE navigating

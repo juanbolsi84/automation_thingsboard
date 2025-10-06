@@ -19,7 +19,7 @@ export default class Devices {
     get closeButton() {return 'role=button[name="Close"]'};
 
     get deleteDeviceBtn() {return 'button:has-text("delete")'};
-    get confirmDelete() {return 'role=button[name="yes]'};
+    get confirmDelete() {return 'role=button[name="Yes"]'};
     get confirmDeleteDialog() {return '.cdk-overlay-container'};
     
     get nextButtonLocator() {return 'role=button[name="Next page"]'};
