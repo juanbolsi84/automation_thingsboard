@@ -21,19 +21,19 @@ export default class Customers {
     get addBtn() {return 'role=button[name="Add"]'};
 
 
-    async createCustomer(){
+    async createCustomer(data){
         await this.actions.click(this.addCustomerBtn);
-        await this.actions.fill(this.customerName, "John");
-        await this.actions.fill(this.customerDescription, "Brief description");
-        await this.actions.selectFromDropdown(this.countryName, "Uruguay");
-        await this.actions.fill(this.city, "Montevideo");
-        await this.actions.fill(this.state_province, "Montevideo");
-        await this.actions.fill(this.zip_postalCode, "11400");
-        await this.actions.fill(this.address1, "18 de Julio 2092");
-        await this.actions.fill(this.address2, "102");
-        await this.actions.selectFromDropdown(this.countryPhone, "Uruguay");
-        await this.actions.fill(this.phone, "99123123");
-        await this.actions.fill(this.email, "john@thingsboard.org");
+        await this.actions.fill(this.customerName, data.Title);
+        await this.actions.fill(this.customerDescription, data.Description);
+        await this.actions.selectFromDropdown(this.countryName, data.Country);
+        await this.actions.fill(this.city, data.City);
+        await this.actions.fill(this.state_province, data['State-Province']);
+        await this.actions.fill(this.zip_postalCode, data['ZIP-Postal Code']);
+        await this.actions.fill(this.address1, data.Address);
+        await this.actions.fill(this.address2, data['Address 2']);
+        await this.actions.selectFromDropdown(this.countryPhone, data.Country);
+        await this.actions.fill(this.phone, data.Phone);
+        await this.actions.fill(this.email, data.Email);
         await this.actions.click(this.addBtn);
 
     }

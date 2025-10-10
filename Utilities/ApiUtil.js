@@ -110,6 +110,7 @@ export default class ApiUtil {
     }
   }
 
+  //add create customer
 
   async deleteCustomerIfExists(customerName){
     const searchResp = await this.apiContext.get(

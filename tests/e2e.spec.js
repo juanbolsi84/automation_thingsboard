@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import PomManager from '../Pages/PomManager.js';
 import ApiUtil from '../Utilities/ApiUtil.js';
 import MockUtil from '../Utilities/MockUtil.js';
+import { readCsvFile } from '../Utilities/ReadCsvFile.js';
 
 
 let pm;
@@ -109,13 +110,20 @@ test('Devices page shows 14 mocked devices with pagination', async ({ page, auth
     await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(4);
 });
 
-test.only('Create customer via UI, delete via API', async ({auth}) => {
+test.only('Create customer via UI using data from CSV file, delete via API', async ({auth}) => {
+  // Read the CSV file
+  const data = await readCsvFile('Data/Customers.csv');
+  // Pick a random row from the file
+  const customer = data[Math.floor(Math.random() * data.length)];
+  // Create a unique customer by adding a suffix, to avoid data collisions in parallel runs
+  customer.Title = `${customer.Title} ${Math.floor(Math.random() * 10000) + 1}`;
+
   await pm.homePage.goToCustomers();
-  await pm.customers.createCustomer();
-  const customerCreated = await pm.customers.actions.waitForRow('created', 'John');
+  await pm.customers.createCustomer(customer);
+  const customerCreated = await pm.customers.actions.waitForRow('created', customer.Title);
   expect(customerCreated).toBe(true);
-  await api.deleteCustomerIfExists('John')
-
-
-
+  await api.deleteCustomerIfExists(customer.Title)
 })
+
+// Add test to create customer via API and delete via UI
+

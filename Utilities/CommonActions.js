@@ -53,13 +53,13 @@ export default class CommonActions {
             optionIndex = await options.findIndex(opt => opt.trim().includes(optionText)); // Find index of the desired option
 
             if (optionIndex != -1) {
-                const optionLocator = this.page.locator(this.optionsLocator).nth(optionIndex); //Click on the option from the dropdown
+                const optionLocator = this.page.locator(this.optionsLocator).nth(optionIndex); //Find the locator for the option
                 await optionLocator.click(); // Click the matched option
                 await optionLocator.waitFor({ state: 'hidden', timeout: 5000 }); // Wait until the option disappears (dropdown closed)
                 return; // Exit after success
             }
 
-            await this.page.waitForTimeout(200); // Poll every 300ms until option is found, avoids flakiness.
+            await this.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
 
         }
     }
