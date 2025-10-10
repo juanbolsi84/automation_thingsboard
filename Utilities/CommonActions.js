@@ -1,6 +1,7 @@
 export default class CommonActions {
-    constructor(page) {
+    constructor(page, columnName = null) {
         this.page = page;
+        this.columnName = columnName;
     }
 
     // Getters for table element locators
@@ -49,7 +50,7 @@ export default class CommonActions {
         let options = [];
         for (let i = 0; i < 50; i++) {
             options = await this.page.locator(this.optionsLocator).allTextContents(); // Get all option texts
-            optionIndex = await options.findIndex(opt => opt.trim() === optionText); // Find index of the desired option
+            optionIndex = await options.findIndex(opt => opt.trim().includes(optionText)); // Find index of the desired option
 
             if (optionIndex != -1) {
                 const optionLocator = this.page.locator(this.optionsLocator).nth(optionIndex); //Click on the option from the dropdown
@@ -83,7 +84,7 @@ export default class CommonActions {
 
     async waitForRow(action, valueToCheck) {
         for (let i = 0; i <= 50; i++) {
-            const row = await this.findRowByCellValue('Name', valueToCheck);
+            const row = await this.findRowByCellValue(this.columnName, valueToCheck);
             if (action === 'created' && row) {
                 return true;
             } else if (action === 'deleted' && !row) {

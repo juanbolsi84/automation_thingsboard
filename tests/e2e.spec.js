@@ -108,3 +108,13 @@ test('Devices page shows 14 mocked devices with pagination', async ({ page, auth
     // Step 5: Verify remaining 4 devices on page 2
     await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(4);
 });
+
+test('Create customer via UI, delete via API', async ({auth}) => {
+  await pm.homePage.goToCustomers();
+  await pm.customers.createCustomer();
+  const customerCreated = await pm.customers.actions.waitForRow('created', 'John');
+  expect(customerCreated).toBe(true);
+
+
+
+})

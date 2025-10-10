@@ -2,6 +2,7 @@ import HomePage from "./HomePage.js";
 import LoginPage from "./Login.js";
 import Devices from "./Devices.js";
 import Assets from "./Assets.js";
+import Customers from "./Customers.js";
 
 export default class PomManager{
     constructor(page){
@@ -10,5 +11,6 @@ export default class PomManager{
     this.homePage = new HomePage(page);
     this.devices = new Devices(page);
     this.assets = new Assets(page);
+    this.customers = new Customers(page);
     }
 }

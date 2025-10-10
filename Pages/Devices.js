@@ -3,7 +3,7 @@ import CommonActions from "../Utilities/CommonActions.js";
 
 export default class Devices {
     constructor(page) {
-        this.actions = new CommonActions(page);
+        this.actions = new CommonActions(page, 'Name'); //The 'Name' parameter passes the column name for calling findRowByCellValue in CommonActions
     }
 
     // Getters for locators
