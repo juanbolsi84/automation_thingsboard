@@ -109,4 +109,18 @@ export default class ApiUtil {
       });
     }
   }
+
+
+  async deleteCustomerIfExists(customerName){
+    const searchResp = await this.apiContext.get(
+      `api/tenant/customers?customerTitle=${encodeURIComponent(customerName)}`,
+      {headers: {'X-Authorization': `Bearer ${this.token}`}}
+    );
+
+    const data = await searchResp.json();
+    if(data?.id?.id) {
+      await this.apiContext.delete(`api/customer/${encodeURIComponent(data.id.id)}`, {
+        headers: {'X-Authorization': `Bearer ${this.token}`}}
+    )};
+  }
 }
