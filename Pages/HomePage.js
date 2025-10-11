@@ -10,7 +10,7 @@ export default class HomePage {
     get assetsLink() {return 'role=link[name="Assets"]'};
     get clientsLink() {return 'role=link[name="Customers"]'};
     get dashboardLink() {return 'role=link[name="Dashboards"]'};
-    get imageGalleryLink() {return 'role=link[name="Image Gallery"]'};
+    get imageGalleryLink() {return 'role=link[name="Image gallery"]'};
     
 
     async goToDevices() {

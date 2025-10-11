@@ -72,15 +72,15 @@ export default class CommonActions {
         const rows = await this.page.locator(this.rowsLocator);
         const rowCount = await rows.count();
 
-        for (let i = 0; i < rowCount; i++) {
-            const cellText = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
-            if (cellText == valueToCheck) {
-                return rows.nth(i);
-            }
+         for (let i = 0; i < rowCount; i++) {
+        const cellTextRaw = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
+        const cellText = cellTextRaw?.trim(); // remove leading/trailing spaces
+        if (cellText === valueToCheck) {
+            return rows.nth(i);
         }
-
-        return null;
     }
+    return null;
+}
 
     async waitForRow(action, valueToCheck) {
         for (let i = 0; i <= 50; i++) {
@@ -94,6 +94,15 @@ export default class CommonActions {
         }
         return false;
     }
+
+    async waitUntilEnabled(locator, timeout = 5000) {
+    const loc = this.page.locator(locator); // Playwright locator
+    await this.page.waitForFunction(
+        (el) => el && !el.disabled, // check element exists and is not disabled
+        await loc.elementHandle(),  // pass the raw DOM element, not the locator
+        { timeout }
+    );
+}
 
 
 }

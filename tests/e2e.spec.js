@@ -110,7 +110,7 @@ test('Devices page shows 14 mocked devices with pagination', async ({ page, auth
     await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(4);
 });
 
-test.only('Create customer via UI using data from CSV file, delete via API', async ({auth}) => {
+test('Create customer via UI using data from CSV file, delete via API', async ({auth}) => {
   // Read the CSV file
   const data = await readCsvFile('Data/Customers.csv');
   // Pick a random row from the file
@@ -125,5 +125,21 @@ test.only('Create customer via UI using data from CSV file, delete via API', asy
   await api.deleteCustomerIfExists(customer.Title)
 })
 
+test('Upload image to Image Gallery', async ({auth}) => {
+  await pm.homePage.goToImageGallery();
+  // Add a random suffix so the table name is unique
+  const uniqueSuffix = Math.floor(Math.random() * 10000);
+  await pm.imageGallery.uploadImage(uniqueSuffix);
+  const rowCreated = await pm.devices.actions.waitForRow('created', `TopCat_${uniqueSuffix}.jpg`); //need to add the file name somewhere else. ENV file?
+  await pm.imageGallery.actions.page.pause();
+  expect(rowCreated).toBe(true);
+})
+
 // Add test to create customer via API and delete via UI
+
+// Add test to upload image file 
+
+// Add test to download image file and cleanup
+
+
 

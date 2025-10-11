@@ -7,6 +7,7 @@ export default class Customers {
     }
 
     get addCustomerBtn() {return 'role=button >> text=add'};
+    get dialogLocator() {return 'role=dialog >> text="Add customer"'};
     get customerName() {return 'role=textbox[name="Title"]'};
     get customerDescription() {return 'role=textbox[name="Description"]'};
     get countryName() {return 'mat-dialog-container input[type="text"][formcontrolname="country"]'};
@@ -23,6 +24,8 @@ export default class Customers {
 
     async createCustomer(data){
         await this.actions.click(this.addCustomerBtn);
+        const dialogLocator = this.actions.page.locator(this.dialogLocator);
+        await dialogLocator.waitFor({state:'visible'});
         await this.actions.fill(this.customerName, data.Title);
         await this.actions.fill(this.customerDescription, data.Description);
         await this.actions.selectFromDropdown(this.countryName, data.Country);
@@ -32,7 +35,8 @@ export default class Customers {
         await this.actions.fill(this.address1, data.Address);
         await this.actions.fill(this.address2, data['Address 2']);
         await this.actions.selectFromDropdown(this.countryPhone, data.Country);
-        await this.actions.fill(this.phone, data.Phone);
+        await this.actions.click(this.phone);
+        await this.actions.page.type(this.phone, data.Phone);
         await this.actions.fill(this.email, data.Email);
         await this.actions.click(this.addBtn);
 
