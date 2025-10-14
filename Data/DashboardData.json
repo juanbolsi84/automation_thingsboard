@@ -1,0 +1,8 @@
+{
+    "defaultDashboard": {
+        "title": "Dashboard",
+        "description": "This is a test",
+        "customer": "Customer A",
+        "imageName": "Status indicators"
+    }
+}

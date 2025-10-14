@@ -104,5 +104,25 @@ export default class CommonActions {
     );
 }
 
+async selectFromMultiDropdown(inputLocator, optionText) {
+        // This funtion deals with dropdowns that don't automatically close after selecting an option
+        await this.page.locator(inputLocator).click();
+        let optionIndex = -1;
+        let options = [];
+        for (let i = 0; i < 50; i++) {
+            options = await this.page.locator(this.optionsLocator).allTextContents(); // Get all option texts
+            optionIndex = await options.findIndex(opt => opt.trim().includes(optionText)); // Find index of the desired option
+
+            if (optionIndex != -1) {
+                const optionLocator = this.page.locator(this.optionsLocator).nth(optionIndex); //Find the locator for the option
+                await optionLocator.click(); // Click the matched option
+                return; // Exit after success
+            }
+
+            await this.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
+
+        }
+    }
+
 
 }

@@ -4,6 +4,7 @@ import PomManager from '../Pages/PomManager.js';
 import ApiUtil from '../Utilities/ApiUtil.js';
 import MockUtil from '../Utilities/MockUtil.js';
 import { readCsvFile } from '../Utilities/ReadCsvFile.js';
+import dashboardData from '../Data/DashboardData.json' assert { type: 'json' };
 
 
 let pm;
@@ -125,21 +126,36 @@ test('Create customer via UI using data from CSV file, delete via API', async ({
   await api.deleteCustomerIfExists(customer.Title)
 })
 
+// Add test to create customer via API and delete via UI
+
 test('Upload image to Image Gallery', async ({auth}) => {
   await pm.homePage.goToImageGallery();
   // Add a random suffix so the table name is unique
   const uniqueSuffix = Math.floor(Math.random() * 10000);
   await pm.imageGallery.uploadImage(uniqueSuffix);
   const rowCreated = await pm.devices.actions.waitForRow('created', `TopCat_${uniqueSuffix}.jpg`); //need to add the file name somewhere else. ENV file?
-  await pm.imageGallery.actions.page.pause();
   expect(rowCreated).toBe(true);
+
+  //need to add a way of deleting the row afterwards
 })
-
-// Add test to create customer via API and delete via UI
-
-// Add test to upload image file 
 
 // Add test to download image file and cleanup
 
+test.only('Create dashboard', async ({auth}) => {
+  await pm.homePage.goToDashboard();
 
+  const data = dashboardData.defaultDashboard;
+  data.title = `${data.title} ${Math.floor(Math.random() * 10000) + 1}`;
+
+  await pm.dashboards.createDashboard(data);
+
+  // need to add widgets
+
+  //const rowCreated = await pm.dashboards.actions.waitForRow('created', data.title);
+  //expect(rowCreated).toBe(true);
+
+
+  
+
+})
 

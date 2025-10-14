@@ -6,5 +6,38 @@ export default class Dashboards{
         this.actions = new CommonActions(page, 'Title');
     }
 
-    //create new dashboard
+    get addBtn() {return 'role=button >> text=add'};
+    get createNewDashboardOpt() {return 'role=menuitem[name="Create new dashboard"]'};
+    get dialogLocator () {return 'role=dialog >> text="Add dashboard"'};
+    get dashboardTitle () {return 'role=textbox[name="Title"]'};
+    get description() {return 'role=textbox[name="Description"]'};
+    get assignedCustomersCombo() {return 'role=combobox[name="Assigned customers"]'};
+    get browseGallery() {return 'role=button[name="Browse from gallery"]'};
+    get systemImagesSwitch() {return 'role=switch[name="Include system images"]'};
+    get imageList() {return '.tb-image-preview-overlay'};
+    get searchImages() {return 'role=button >> text=search'};
+    get searchBar() {return 'input[placeholder="Search image"]'};
+    get selectBtn() {return 'role=button >> text=Select'};
+    get addDashboardBtn() {return 'role=button[name="Add"]'};
+
+
+    async createDashboard(dashboard){
+        await this.actions.click(this.addBtn);
+        await this.actions.click(this.createNewDashboardOpt);
+        await this.actions.page.locator(this.dialogLocator).waitFor({state:'visible'});
+        await this.actions.fill(this.dashboardTitle, dashboard.title);
+        await this.actions.fill(this.description, dashboard.description);
+        await this.actions.selectFromMultiDropdown(this.assignedCustomersCombo, dashboard.customer);
+        await this.actions.page.keyboard.press('Tab'); // This is a bit weird but we have to click outside the dropdown to close it
+        await this.actions.click(this.browseGallery);
+        await this.actions.waitUntilEnabled(this.systemImagesSwitch);
+        await this.actions.click(this.systemImagesSwitch);
+        await this.actions.page.locator(this.imageList).nth(0).waitFor({ state: 'visible' });
+        await this.actions.page.click(this.searchImages);
+        await this.actions.fill(this.searchBar, dashboard.imageName);
+        await this.actions.click(this.selectBtn);
+        await this.actions.waitUntilEnabled(this.addDashboardBtn);
+        await this.actions.click(this.addDashboardBtn);
+
+    }
 }
