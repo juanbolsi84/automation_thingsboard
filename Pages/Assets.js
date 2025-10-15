@@ -39,8 +39,8 @@ export default class Assets {
 
     }
 
-    async deleteAsset(columnName, name) {
-        const rowLocator = await this.actions.findRowByCellValue(columnName, name);
+    async deleteAsset(name) {
+        const rowLocator = await this.actions.findRowByCellValue(name);
         const deleteBtn = await rowLocator.locator(this.deleteAssetBtn);
         await deleteBtn.click();
         await this.actions.click(this.confirmDelete);

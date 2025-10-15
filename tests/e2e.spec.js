@@ -4,7 +4,7 @@ import PomManager from '../Pages/PomManager.js';
 import ApiUtil from '../Utilities/ApiUtil.js';
 import MockUtil from '../Utilities/MockUtil.js';
 import { readCsvFile } from '../Utilities/ReadCsvFile.js';
-import dashboardData from '../Data/DashboardData.json' assert { type: 'json' };
+const dashboardData = require('../Data/DashboardData.json');
 
 
 let pm;
@@ -28,7 +28,7 @@ test('Manual login', async({page}) => {
 });
 
 test.describe('Devices', () => {
-  test('Create a device via UI', async ({auth}) => {
+  test('Create a device via UI, delete via API', async ({auth}) => {
     await pm.homePage.goToDevices();
 
     const newDevice = {
@@ -51,7 +51,7 @@ test.describe('Devices', () => {
     await api.createDevice(rndDeviceName, 'Sensor');
 
     await pm.homePage.goToDevices();
-    await pm.devices.deleteDevice('Name', rndDeviceName);
+    await pm.devices.deleteDevice(rndDeviceName);
 
     const rowDeleted = await pm.devices.actions.waitForRow('deleted', rndDeviceName);
     expect(rowDeleted).toBe(true);
@@ -82,8 +82,8 @@ test.describe('Assets', () => {
     await api.createAsset(newAssetName);
 
     await pm.homePage.goToAssets();
-    await pm.assets.actions.findRowByCellValue('Name', newAssetName);
-    await pm.assets.deleteAsset('Name', newAssetName);
+    await pm.assets.actions.findRowByCellValue(newAssetName);
+    await pm.assets.deleteAsset(newAssetName);
 
     const assetDeleted = await pm.assets.actions.waitForRow('deleted', newAssetName);
     expect(assetDeleted).toBe(true);
@@ -141,18 +141,41 @@ test('Upload image to Image Gallery', async ({auth}) => {
 
 // Add test to download image file and cleanup
 
-test.only('Create dashboard', async ({auth}) => {
+test('Create dashboard', async ({auth}) => {
+  
+  // Create device
+  const rndDeviceName = `Thermometer ${Math.floor(Math.random() * 10000) + 1}`;
+  await api.createDevice(rndDeviceName, 'Sensor');
+
+  // Go to Dashboards page
   await pm.homePage.goToDashboard();
 
+  // Read from DashboardData.json and assign properties
   const data = dashboardData.defaultDashboard;
   data.title = `${data.title} ${Math.floor(Math.random() * 10000) + 1}`;
+  data.device = rndDeviceName;
 
+  // Create Dashboard
   await pm.dashboards.createDashboard(data);
+  await pm.dashboards.actions.page.pause();
 
-  // need to add widgets
+  //Add widget
+  await pm.dashboards.addWidget(data);
 
-  //const rowCreated = await pm.dashboards.actions.waitForRow('created', data.title);
-  //expect(rowCreated).toBe(true);
+  // assert the widget is there
+  await expect(await pm.dashboards.actions.page.locator(pm.dashboards.widgetClass).count()).toBeGreaterThan(0); // search for a better way of doing this
+
+  // assert the dashboard is there
+  await pm.homePage.goToDashboard();
+  const rowCreated = await pm.dashboards.actions.waitForRow('created', data.title);
+  await expect(rowCreated).toBe(true);
+
+  // delete device
+  await api.deleteDeviceIfExists(rndDeviceName);
+
+  // delete dashboard
+  //await pm.dashboards.actions.findRowByCellValue(data.title);
+
 
 
   

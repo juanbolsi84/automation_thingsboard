@@ -28,16 +28,46 @@ export default class Dashboards{
         await this.actions.fill(this.dashboardTitle, dashboard.title);
         await this.actions.fill(this.description, dashboard.description);
         await this.actions.selectFromMultiDropdown(this.assignedCustomersCombo, dashboard.customer);
-        await this.actions.page.keyboard.press('Tab'); // This is a bit weird but we have to click outside the dropdown to close it
+        await this.actions.page.keyboard.press('Tab'); // This is a bit weird but we have to focus outside the dropdown to close it
         await this.actions.click(this.browseGallery);
         await this.actions.waitUntilEnabled(this.systemImagesSwitch);
         await this.actions.click(this.systemImagesSwitch);
-        await this.actions.page.locator(this.imageList).nth(0).waitFor({ state: 'visible' });
+        await this.actions.page.locator(this.imageList).nth(0).waitFor({ state: 'visible' }); // Waits until at least one element is displayed
         await this.actions.page.click(this.searchImages);
         await this.actions.fill(this.searchBar, dashboard.imageName);
         await this.actions.click(this.selectBtn);
         await this.actions.waitUntilEnabled(this.addDashboardBtn);
         await this.actions.click(this.addDashboardBtn);
 
+    }
+
+    get addNewWidgetBtn() {return 'role=button[name="Add new widget"]'};
+    widgetBundleSelect(dashboard) {
+        return `.widget-title[title="${dashboard.widgetBundle}"]`;
+    }
+    widgetSelect(dashboard){
+        return `.widget-title[title="${dashboard.widget}"]`;
+    }
+    get deviceSelect() {return 'role=combobox[name="Device"]'};
+    get addWidgetBtn() {return 'role=button[name="Add"]'};
+    get addSave() {return 'role=button[name="Save"]'};
+    get widgetClass() {return '.tb-widget'};
+
+
+    
+
+    async addWidget(dashboard){
+        await this.actions.click(this.addNewWidgetBtn);
+        await this.actions.page.locator(this.widgetBundleSelect(dashboard)).waitFor({state: 'visible'});
+        await this.actions.click(this.widgetBundleSelect(dashboard));
+        await this.actions.click(this.widgetSelect(dashboard));
+        await this.actions.selectFromDropdown(this.deviceSelect, dashboard.device);
+        await this.actions.click(this.addWidgetBtn);
+        await this.actions.click(this.addSave);
+
+    }
+
+    async deleteDashboard(dashboard){
+        await this.actions.findRowByCellValue(dashboard.title);
     }
 }

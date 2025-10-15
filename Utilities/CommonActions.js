@@ -5,10 +5,10 @@ export default class CommonActions {
     }
 
     // Getters for table element locators
-    get optionsLocator() {return 'mat-option'};
-    get headersLocator() {return 'mat-header-cell'};
-    get rowsLocator() {return 'mat-row'};
-    get cellLocator() {return 'mat-cell'};
+    get optionsLocator() { return 'mat-option' };
+    get headersLocator() { return 'mat-header-cell' };
+    get rowsLocator() { return 'mat-row' };
+    get cellLocator() { return 'mat-cell' };
 
     async navigate(url) {
         await this.page.goto(url);
@@ -59,52 +59,58 @@ export default class CommonActions {
                 return; // Exit after success
             }
 
-            await this.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
+            await this.page.waitForTimeout(300); // Poll every 200ms until option is found, avoids flakiness.
 
         }
     }
 
-    async findRowByCellValue(columnName, valueToCheck) {
+    async findRowByCellValue(valueToCheck, overrideColumnName = null) {
+        const columnName = overrideColumnName || this.columnName;
 
         const headers = await this.page.locator(this.headersLocator).allTextContents();
         const colIndex = headers.findIndex(h => h.trim() === columnName);
 
+        if (colIndex === -1) {
+            throw new Error(`Column "${columnName}" not found among headers: ${headers}`);
+        }
+
         const rows = await this.page.locator(this.rowsLocator);
         const rowCount = await rows.count();
 
-         for (let i = 0; i < rowCount; i++) {
-        const cellTextRaw = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
-        const cellText = cellTextRaw?.trim(); // remove leading/trailing spaces
-        if (cellText === valueToCheck) {
-            return rows.nth(i);
+        for (let i = 0; i < rowCount; i++) {
+            const cellTextRaw = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
+            const cellText = cellTextRaw?.trim();
+            if (cellText === valueToCheck) {
+                return rows.nth(i);
+            }
         }
-    }
-    return null;
-}
 
-    async waitForRow(action, valueToCheck) {
+        return null;
+    }
+
+    async waitForRow(action, valueToCheck, overrideColumnName = null) {
         for (let i = 0; i <= 50; i++) {
-            const row = await this.findRowByCellValue(this.columnName, valueToCheck);
+            const row = await this.findRowByCellValue(valueToCheck, overrideColumnName);
             if (action === 'created' && row) {
                 return true;
             } else if (action === 'deleted' && !row) {
                 return true;
             }
-            await this.page.waitForTimeout(200);
+            await this.page.waitForTimeout(300);
         }
         return false;
     }
 
     async waitUntilEnabled(locator, timeout = 5000) {
-    const loc = this.page.locator(locator); // Playwright locator
-    await this.page.waitForFunction(
-        (el) => el && !el.disabled, // check element exists and is not disabled
-        await loc.elementHandle(),  // pass the raw DOM element, not the locator
-        { timeout }
-    );
-}
+        const loc = this.page.locator(locator); // Playwright locator
+        await this.page.waitForFunction(
+            (el) => el && !el.disabled, // check element exists and is not disabled
+            await loc.elementHandle(),  // pass the raw DOM element, not the locator
+            { timeout }
+        );
+    }
 
-async selectFromMultiDropdown(inputLocator, optionText) {
+    async selectFromMultiDropdown(inputLocator, optionText) {
         // This funtion deals with dropdowns that don't automatically close after selecting an option
         await this.page.locator(inputLocator).click();
         let optionIndex = -1;
@@ -119,7 +125,7 @@ async selectFromMultiDropdown(inputLocator, optionText) {
                 return; // Exit after success
             }
 
-            await this.page.waitForTimeout(200); // Poll every 200ms until option is found, avoids flakiness.
+            await this.page.waitForTimeout(300); // Poll every 200ms until option is found, avoids flakiness.
 
         }
     }

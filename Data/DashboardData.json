@@ -3,6 +3,9 @@
         "title": "Dashboard",
         "description": "This is a test",
         "customer": "Customer A",
-        "imageName": "Status indicators"
+        "imageName": "Status indicators",
+        "widgetBundle": "Charts",
+        "widget": "Line chart",
+        "device": "Device 1"
     }
 }

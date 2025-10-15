@@ -45,9 +45,9 @@ export default class Devices {
 
     }
     
-    async deleteDevice(columnName, value) {
+    async deleteDevice(value) {
         // Find the row where the column has the given value
-        const rowLocator = await this.actions.findRowByCellValue(columnName, value);
+        const rowLocator = await this.actions.findRowByCellValue(value);
         if (!rowLocator) throw new Error(`Device not found`);
 
         // Find the delete button inside that row
