@@ -52,6 +52,7 @@ export default class Dashboards{
     get addWidgetBtn() {return 'role=button[name="Add"]'};
     get addSave() {return 'role=button[name="Save"]'};
     get widgetClass() {return '.tb-widget'};
+    get downloadButton() {return 'role=button >> text=file_download'};
 
 
     
@@ -64,10 +65,27 @@ export default class Dashboards{
         await this.actions.selectFromDropdown(this.deviceSelect, dashboard.device);
         await this.actions.click(this.addWidgetBtn);
         await this.actions.click(this.addSave);
+        await this.actions.waitUntilEnabled(this.downloadButton);
 
     }
 
+    get deleteDashboardBtn() {return 'button:has-text("delete")'};
+    get confirmDelete() {return 'role=button[name="Yes"]'};
+    get confirmDeleteDialog() {return '.cdk-overlay-container'};
+
     async deleteDashboard(dashboard){
-        await this.actions.findRowByCellValue(dashboard.title);
+        const rowLocator = await this.actions.findRowByCellValue(dashboard.title);
+        if (!rowLocator) throw new Error(`Dashboard not found`);
+
+         // Find the delete button inside that row
+        const deleteBtn = await rowLocator.locator(this.deleteDashboardBtn);
+
+        // Click the delete button
+        await deleteBtn.click();
+
+        // Confirm deletion in the dialog
+        await this.actions.click(this.confirmDelete);
+        await this.actions.page.locator(this.confirmDelete).waitFor({state:'hidden'});
+
     }
 }

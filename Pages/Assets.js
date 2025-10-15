@@ -35,7 +35,7 @@ export default class Assets {
         }
         await this.actions.fill(this.assetDescription, description); //fill description
         await this.actions.click(this.addAssetBtn); //click add button
-        await this.actions.page.locator(this.dialogLocator).waitFor({ state: 'hidden' });
+        await this.actions.page.locator(this.addAssetBtn).waitFor({ state: 'hidden' });
 
     }
 
@@ -44,7 +44,7 @@ export default class Assets {
         const deleteBtn = await rowLocator.locator(this.deleteAssetBtn);
         await deleteBtn.click();
         await this.actions.click(this.confirmDelete);
-        await this.actions.page.locator(this.confirmDeleteDialog).waitFor({ state: 'hidden' });
+        await this.actions.page.locator(this.confirmDelete).waitFor({ state: 'hidden' });
 
     }
 

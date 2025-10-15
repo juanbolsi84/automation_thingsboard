@@ -78,9 +78,9 @@ export default class CommonActions {
         const rowCount = await rows.count();
 
         for (let i = 0; i < rowCount; i++) {
-            const cellTextRaw = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
+            const cellTextRaw = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();            
             const cellText = cellTextRaw?.trim();
-            if (cellText === valueToCheck) {
+            if (cellText == valueToCheck) {
                 return rows.nth(i);
             }
         }

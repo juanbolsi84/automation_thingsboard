@@ -137,6 +137,8 @@ test('Upload image to Image Gallery', async ({auth}) => {
   expect(rowCreated).toBe(true);
 
   //need to add a way of deleting the row afterwards
+  const rowDeleted = await pm.devices.actions.waitForRow('deleted', `TopCat_${uniqueSuffix}.jpg`);
+  expect(rowDeleted).toBe(true);
 })
 
 // Add test to download image file and cleanup
@@ -157,28 +159,26 @@ test('Create dashboard', async ({auth}) => {
 
   // Create Dashboard
   await pm.dashboards.createDashboard(data);
-  await pm.dashboards.actions.page.pause();
 
   //Add widget
   await pm.dashboards.addWidget(data);
 
   // assert the widget is there
-  await expect(await pm.dashboards.actions.page.locator(pm.dashboards.widgetClass).count()).toBeGreaterThan(0); // search for a better way of doing this
+  expect(await pm.dashboards.actions.page.locator(pm.dashboards.widgetClass).count()).toBeGreaterThan(0); // search for a better way of doing this
 
   // assert the dashboard is there
   await pm.homePage.goToDashboard();
   const rowCreated = await pm.dashboards.actions.waitForRow('created', data.title);
-  await expect(rowCreated).toBe(true);
+  expect(rowCreated).toBe(true);
 
   // delete device
   await api.deleteDeviceIfExists(rndDeviceName);
+  await pm.dashboards.actions.page.pause();
 
   // delete dashboard
-  //await pm.dashboards.actions.findRowByCellValue(data.title);
-
-
-
-  
+  await pm.dashboards.deleteDashboard(data);
+  const rowDeleted = await pm.dashboards.actions.waitForRow('deleted', data.title);
+  expect(rowDeleted).toBe(true);  
 
 })
 

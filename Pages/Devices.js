@@ -41,7 +41,7 @@ export default class Devices {
         await this.actions.fill(this.deviceDescription, description); 
         await this.actions.click(this.addDeviceBtn);
         await this.actions.click(this.closeButton);
-        await this.actions.page.locator(this.dialogLocator).waitFor({state:'hidden'});
+        await this.actions.page.locator(this.closeButton).waitFor({state:'hidden'});
 
     }
     
@@ -51,14 +51,14 @@ export default class Devices {
         if (!rowLocator) throw new Error(`Device not found`);
 
         // Find the delete button inside that row
-        const deleteBtn = rowLocator.locator(this.deleteDeviceBtn);
+        const deleteBtn = await rowLocator.locator(this.deleteDeviceBtn);
 
         // Click the delete button
         await deleteBtn.click();
 
         // Confirm deletion in the dialog
         await this.actions.click(this.confirmDelete);
-        await this.actions.page.locator(this.confirmDeleteDialog).waitFor({state:'hidden'});
+        await this.actions.page.locator(this.confirmDelete).waitFor({state:'hidden'});
     }
 
     async clickNextButton(){
