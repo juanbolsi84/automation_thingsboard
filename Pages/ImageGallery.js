@@ -38,6 +38,20 @@ export default class ImageGallery {
         await this.actions.click(this.uploadButton);
     }
 
+    get deleteBtn() {return 'button:has-text("delete")'};
+    get confirmDelete() {return 'role=button[name="Yes"]'};
+
+
+    async deleteImage(imageName){
+       const rowLocator = await this.actions.findRowByCellValue(imageName);
+       const deleteBtn = await rowLocator.locator(this.deleteBtn);
+       await deleteBtn.click();
+       await this.actions.click(this.confirmDelete);
+       await this.actions.page.locator(this.confirmDelete).waitFor({state: 'hidden'});
+       
+
+    }
+
     
 
     //Download image

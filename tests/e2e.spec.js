@@ -128,7 +128,7 @@ test('Create customer via UI using data from CSV file, delete via API', async ({
 
 // Add test to create customer via API and delete via UI
 
-test('Upload image to Image Gallery', async ({auth}) => {
+test.only('Upload image to Image Gallery', async ({auth}) => {
   await pm.homePage.goToImageGallery();
   // Add a random suffix so the table name is unique
   const uniqueSuffix = Math.floor(Math.random() * 10000);
@@ -137,7 +137,8 @@ test('Upload image to Image Gallery', async ({auth}) => {
   expect(rowCreated).toBe(true);
 
   //need to add a way of deleting the row afterwards
-  const rowDeleted = await pm.devices.actions.waitForRow('deleted', `TopCat_${uniqueSuffix}.jpg`);
+  await pm.imageGallery.deleteImage(`TopCat_${uniqueSuffix}.jpg`);
+  const rowDeleted = await pm.imageGallery.actions.waitForRow('deleted', `TopCat_${uniqueSuffix}.jpg`);
   expect(rowDeleted).toBe(true);
 })
 
