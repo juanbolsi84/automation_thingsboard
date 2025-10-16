@@ -26,6 +26,7 @@ export default class Devices {
 
 
     async createDevice({ name, label = '', profile = 'default', assignToCustomer = '', description = '' }) {
+        await this.actions.waitForTableToLoad();
         await this.actions.click(this.addDevicePlusBtn);
         await this.actions.click(this.addDeviceOption);
         const dialogLocator = this.actions.page.locator(this.dialogLocator);
@@ -46,6 +47,7 @@ export default class Devices {
     }
     
     async deleteDevice(value) {
+        await this.actions.waitForTableToLoad();
         // Find the row where the column has the given value
         const rowLocator = await this.actions.findRowByCellValue(value);
         if (!rowLocator) throw new Error(`Device not found`);

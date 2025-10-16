@@ -78,7 +78,7 @@ export default class CommonActions {
         const rowCount = await rows.count();
 
         for (let i = 0; i < rowCount; i++) {
-            const cellTextRaw = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();            
+            const cellTextRaw = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
             const cellText = cellTextRaw?.trim();
             if (cellText == valueToCheck) {
                 return rows.nth(i);
@@ -128,6 +128,11 @@ export default class CommonActions {
             await this.page.waitForTimeout(300); // Poll every 200ms until option is found, avoids flakiness.
 
         }
+    }
+
+    async waitForTableToLoad() {
+        const loadingLocator = this.page.locator('text=Loading...'); 
+        await loadingLocator.waitFor({ state: 'hidden' }); // waits until loading disappears
     }
 
 

@@ -128,7 +128,7 @@ test('Create customer via UI using data from CSV file, delete via API', async ({
 
 // Add test to create customer via API and delete via UI
 
-test.only('Upload image to Image Gallery', async ({auth}) => {
+test('Upload image to Image Gallery', async ({auth}) => {
   await pm.homePage.goToImageGallery();
   // Add a random suffix so the table name is unique
   const uniqueSuffix = Math.floor(Math.random() * 10000);

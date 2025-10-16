@@ -21,7 +21,7 @@ export default class Assets {
     get confirmDeleteDialog() { return '.cdk-overlay-container' };
 
     async createAsset({ name, label = '', assetProfile = 'default', assignToCustomer = '', description = '' }) {
-
+        await this.actions.waitForTableToLoad();
         await this.actions.click(this.addAssetPlusBtn); // click + button
         await this.actions.click(this.addAssetOption); //click add new asset
         const dialogLocator = this.actions.page.locator(this.dialogLocator); 
@@ -40,6 +40,7 @@ export default class Assets {
     }
 
     async deleteAsset(name) {
+        await this.actions.waitForTableToLoad();
         const rowLocator = await this.actions.findRowByCellValue(name);
         const deleteBtn = await rowLocator.locator(this.deleteAssetBtn);
         await deleteBtn.click();
