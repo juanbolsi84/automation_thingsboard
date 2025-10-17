@@ -1,91 +1,81 @@
 import CommonActions from "../Utilities/CommonActions";
 
-export default class Dashboards{
+export default class Dashboards {
     constructor(page){
         this.page = page;
         this.actions = new CommonActions(page, 'Title');
     }
 
-    get addBtn() {return 'role=button >> text=add'};
-    get createNewDashboardOpt() {return 'role=menuitem[name="Create new dashboard"]'};
-    get dialogLocator () {return 'role=dialog >> text="Add dashboard"'};
-    get dashboardTitle () {return 'role=textbox[name="Title"]'};
-    get description() {return 'role=textbox[name="Description"]'};
-    get assignedCustomersCombo() {return 'role=combobox[name="Assigned customers"]'};
-    get browseGallery() {return 'role=button[name="Browse from gallery"]'};
-    get systemImagesSwitch() {return 'role=switch[name="Include system images"]'};
-    get imageList() {return '.tb-image-preview-overlay'};
-    get searchImages() {return 'role=button >> text=search'};
-    get searchBar() {return 'input[placeholder="Search image"]'};
-    get selectBtn() {return 'role=button >> text=Select'};
-    get addDashboardBtn() {return 'role=button[name="Add"]'};
-
+    // --- Locators ---
+    get addBtn() { return this.page.locator('role=button >> text=add'); }
+    get createNewDashboardOpt() { return this.page.locator('role=menuitem[name="Create new dashboard"]'); }
+    get dialogLocator() { return this.page.locator('role=dialog >> text="Add dashboard"'); }
+    get dashboardTitle() { return this.page.locator('role=textbox[name="Title"]'); }
+    get description() { return this.page.locator('role=textbox[name="Description"]'); }
+    get assignedCustomersCombo() { return this.page.locator('role=combobox[name="Assigned customers"]'); }
+    get browseGallery() { return this.page.locator('role=button[name="Browse from gallery"]'); }
+    get systemImagesSwitch() { return this.page.locator('role=switch[name="Include system images"]'); }
+    get imageList() { return this.page.locator('.tb-image-preview-overlay'); }
+    get searchImages() { return this.page.locator('role=button >> text=search'); }
+    get searchBar() { return this.page.locator('input[placeholder="Search image"]'); }
+    get selectBtn() { return this.page.locator('role=button >> text=Select'); }
+    get addDashboardBtn() { return this.page.locator('role=button[name="Add"]'); }
 
     async createDashboard(dashboard){
         await this.actions.click(this.addBtn);
         await this.actions.click(this.createNewDashboardOpt);
-        await this.actions.page.locator(this.dialogLocator).waitFor({state:'visible'});
+        await this.dashboardTitle.waitFor({state:'visible'});
         await this.actions.fill(this.dashboardTitle, dashboard.title);
         await this.actions.fill(this.description, dashboard.description);
         await this.actions.selectFromMultiDropdown(this.assignedCustomersCombo, dashboard.customer);
-        await this.actions.page.keyboard.press('Tab'); // This is a bit weird but we have to focus outside the dropdown to close it
+        await this.page.keyboard.press('Tab'); // focus outside dropdown to close it
         await this.actions.click(this.browseGallery);
         await this.actions.waitUntilEnabled(this.systemImagesSwitch);
         await this.actions.click(this.systemImagesSwitch);
-        await this.actions.page.locator(this.imageList).nth(0).waitFor({ state: 'visible' }); // Waits until at least one element is displayed
-        await this.actions.page.click(this.searchImages);
+        await this.imageList.nth(0).waitFor({ state: 'visible' });
+        await this.actions.click(this.searchImages);
         await this.actions.fill(this.searchBar, dashboard.imageName);
-        await this.actions.click(this.selectBtn);
+        await this.selectBtn.nth(0).waitFor({ state: 'visible' }); // first button visible
+        await this.selectBtn.nth(1).waitFor({ state: 'hidden' });  // second button hidden
+        await this.actions.click(this.selectBtn.nth(0)); // makes sure it clicks on the first instance, just in case        
         await this.actions.waitUntilEnabled(this.addDashboardBtn);
         await this.actions.click(this.addDashboardBtn);
-
     }
 
-    get addNewWidgetBtn() {return 'role=button[name="Add new widget"]'};
-    widgetBundleSelect(dashboard) {
-        return `.widget-title[title="${dashboard.widgetBundle}"]`;
-    }
-    widgetSelect(dashboard){
-        return `.widget-title[title="${dashboard.widget}"]`;
-    }
-    get deviceSelect() {return 'role=combobox[name="Device"]'};
-    get addWidgetBtn() {return 'role=button[name="Add"]'};
-    get addSave() {return 'role=button[name="Save"]'};
-    get widgetClass() {return '.tb-widget'};
-    get downloadButton() {return 'role=button >> text=file_download'};
-
-
-    
+    // --- Widgets ---
+    get addNewWidgetBtn() { return this.page.locator('role=button[name="Add new widget"]'); }
+    widgetBundleSelect(dashboard) { return this.page.locator(`.widget-title[title="${dashboard.widgetBundle}"]`); }
+    widgetSelect(dashboard) { return this.page.locator(`.widget-title[title="${dashboard.widget}"]`); }
+    get deviceSelect() { return this.page.locator('role=combobox[name="Device"]'); }
+    get addWidgetBtn() { return this.page.locator('role=button[name="Add"]'); }
+    get addSave() { return this.page.locator('role=button[name="Save"]'); }
+    get widgetClass() { return this.page.locator('.tb-widget'); }
+    get downloadButton() { return this.page.locator('role=button >> text=file_download'); }
 
     async addWidget(dashboard){
         await this.actions.click(this.addNewWidgetBtn);
-        await this.actions.page.locator(this.widgetBundleSelect(dashboard)).waitFor({state: 'visible'});
+        await this.widgetBundleSelect(dashboard).waitFor({state: 'visible'});
         await this.actions.click(this.widgetBundleSelect(dashboard));
         await this.actions.click(this.widgetSelect(dashboard));
         await this.actions.selectFromDropdown(this.deviceSelect, dashboard.device);
         await this.actions.click(this.addWidgetBtn);
         await this.actions.click(this.addSave);
         await this.actions.waitUntilEnabled(this.downloadButton);
-
     }
 
-    get deleteDashboardBtn() {return 'button:has-text("delete")'};
-    get confirmDelete() {return 'role=button[name="Yes"]'};
-    get confirmDeleteDialog() {return '.cdk-overlay-container'};
+    // --- Delete ---
+    get deleteDashboardBtn() { return this.page.locator('button:has-text("delete")'); }
+    get confirmDelete() { return this.page.locator('role=button[name="Yes"]'); }
+    get confirmDeleteDialog() { return this.page.locator('.cdk-overlay-container'); }
 
     async deleteDashboard(dashboard){
         const rowLocator = await this.actions.findRowByCellValue(dashboard.title);
         if (!rowLocator) throw new Error(`Dashboard not found`);
 
-         // Find the delete button inside that row
         const deleteBtn = await rowLocator.locator(this.deleteDashboardBtn);
-
-        // Click the delete button
         await deleteBtn.click();
 
-        // Confirm deletion in the dialog
         await this.actions.click(this.confirmDelete);
-        await this.actions.page.locator(this.confirmDelete).waitFor({state:'hidden'});
-
+        await this.confirmDelete.waitFor({state:'hidden'});
     }
 }

@@ -32,15 +32,21 @@ test.describe('Login', () => {
   test('Login with wrong credentials', async({page}) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login("JohnDoe@me.com", "WrongPW2025!");
-    await expect(pm.loginPage.getInvalidCredAlert()).toBeVisible();
+
+    await expect(page).toHaveTitle('ThingsBoard | Login');
+    await expect(page).toHaveURL(pm.loginPage.url);
+    
+    await expect(pm.loginPage.InvalidCredAlert()).toBeVisible();
+    
     await pm.loginPage.closeInvalidMsg();
-    await expect(pm.loginPage.getInvalidCredAlert()).not.toBeVisible();
+    await expect(pm.loginPage.InvalidCredAlert()).not.toBeVisible();
 
   })
 
   test('Login with no username, correct password', async({page}) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login("", process.env.TB_PASSWORD || 'tenant');
+    await expect(page).toHaveURL(pm.loginPage.url);
     await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
 
   })
@@ -48,13 +54,15 @@ test.describe('Login', () => {
   test('Login with correct username, incorrect password', async({page}) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login(process.env.TB_USERNAME, "WRONGpw123!");
-    await expect(pm.loginPage.getInvalidCredAlert()).toBeVisible();
+    await expect(page).toHaveURL(pm.loginPage.url);
+    await expect(pm.loginPage.InvalidCredAlert()).toBeVisible();
     
   })
 
   test('Login with no username and no password', async({page}) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login("", "");
+    await expect(page).toHaveURL(pm.loginPage.url);
     await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
     
   })
@@ -62,14 +70,13 @@ test.describe('Login', () => {
   test('Login with wrong username format', async ({page}) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login("JohnDoe.com", process.env.TB_PASSWORD);
+    await expect(page).toHaveURL(pm.loginPage.url);
     await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
 
   })
 
   test('See password', async ({page}) => {
     await pm.loginPage.navigate();
-    await pm.loginPage.login("JohnDoe@me.com", "WrongPW2025!");
-    await pm.loginPage.closeInvalidMsg();
     await expect(pm.loginPage.passwordLocator).toHaveAttribute('type', 'password');
     await pm.loginPage.togglePasswordVisibility();
     await expect(pm.loginPage.passwordLocator).toHaveAttribute('type', 'text');
@@ -221,7 +228,7 @@ test('Create dashboard', async ({ auth }) => {
   await pm.dashboards.addWidget(data);
 
   // assert the widget is there
-  expect(await pm.dashboards.actions.page.locator(pm.dashboards.widgetClass).count()).toBeGreaterThan(0); // search for a better way of doing this
+  expect(await pm.dashboards.widgetClass.count()).toBeGreaterThan(0);
 
   // assert the dashboard is there
   await pm.homePage.goToDashboard();
