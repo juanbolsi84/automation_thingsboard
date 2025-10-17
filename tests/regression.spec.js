@@ -21,7 +21,7 @@ test.beforeEach(async ({ page, baseURL }, testInfo) => {
   pm = new PomManager(page);
 });
 
-test.describe.only('Login', () => {
+test.describe('Login', () => {
 
   test('Valid login', async ({ page }) => {
     await pm.loginPage.navigate();
