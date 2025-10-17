@@ -21,14 +21,70 @@ test.beforeEach(async ({ page, baseURL }, testInfo) => {
   pm = new PomManager(page);
 });
 
-test('Manual login', async({page}) => {
-  await pm.loginPage.navigate();
-  await pm.loginPage.login(process.env.TB_USERNAME || 'tenant@thingsboard.org', process.env.TB_PASSWORD || 'tenant');
-  await expect(page).toHaveTitle('ThingsBoard | Home');
-});
+test.describe.only('Login', () => {
+
+  test('Valid login', async ({ page }) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.login(process.env.TB_USERNAME || 'tenant@thingsboard.org', process.env.TB_PASSWORD || 'tenant');
+    await expect(page).toHaveTitle('ThingsBoard | Home');
+  });
+
+  test('Login with wrong credentials', async({page}) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.login("JohnDoe@me.com", "WrongPW2025!");
+    await expect(pm.loginPage.getInvalidCredAlert()).toBeVisible();
+    await pm.loginPage.closeInvalidMsg();
+    await expect(pm.loginPage.getInvalidCredAlert()).not.toBeVisible();
+
+  })
+
+  test('Login with no username, correct password', async({page}) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.login("", process.env.TB_PASSWORD || 'tenant');
+    await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
+
+  })
+
+  test('Login with correct username, incorrect password', async({page}) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.login(process.env.TB_USERNAME, "WRONGpw123!");
+    await expect(pm.loginPage.getInvalidCredAlert()).toBeVisible();
+    
+  })
+
+  test('Login with no username and no password', async({page}) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.login("", "");
+    await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
+    
+  })
+
+  test('Login with wrong username format', async ({page}) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.login("JohnDoe.com", process.env.TB_PASSWORD);
+    await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
+
+  })
+
+  test('See password', async ({page}) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.login("JohnDoe@me.com", "WrongPW2025!");
+    await pm.loginPage.closeInvalidMsg();
+    await expect(pm.loginPage.passwordLocator).toHaveAttribute('type', 'password');
+    await pm.loginPage.togglePasswordVisibility();
+    await expect(pm.loginPage.passwordLocator).toHaveAttribute('type', 'text');
+
+  })
+
+  test('Forgot password', async ({page}) => {
+    await pm.loginPage.navigate();
+
+  })
+
+})
 
 test.describe('Devices', () => {
-  test('Create a device via UI, delete via API', async ({auth}) => {
+  test('Create a device via UI, delete via API', async ({ auth }) => {
     await pm.homePage.goToDevices();
 
     const newDevice = {
@@ -46,7 +102,7 @@ test.describe('Devices', () => {
     await api.deleteDeviceIfExists(newDevice.name);
   });
 
-  test('Create a device via API, delete via UI', async ({auth}) => {
+  test('Create a device via API, delete via UI', async ({ auth }) => {
     const rndDeviceName = `Accelerometer ${Math.floor(Math.random() * 10000) + 1}`;
     await api.createDevice(rndDeviceName, 'Sensor');
 
@@ -59,7 +115,7 @@ test.describe('Devices', () => {
 });
 
 test.describe('Assets', () => {
-  test('Create an asset via UI, delete via API', async ({auth}) => {
+  test('Create an asset via UI, delete via API', async ({ auth }) => {
     await pm.homePage.goToAssets();
 
     const newAsset = {
@@ -77,7 +133,7 @@ test.describe('Assets', () => {
     await api.deleteAssetIfExists(newAsset.name);
   });
 
-  test('Create an asset via API, delete via UI', async ({auth}) => {
+  test('Create an asset via API, delete via UI', async ({ auth }) => {
     const newAssetName = `Infrared ${Math.floor(Math.random() * 10000) + 1}`;
     await api.createAsset(newAssetName);
 
@@ -93,25 +149,25 @@ test.describe('Assets', () => {
 
 
 test('Devices page shows 14 mocked devices with pagination', async ({ page, auth }) => {
-    const mock = new MockUtil(page);
+  const mock = new MockUtil(page);
 
-    // Step 1: Register the mock BEFORE navigating
-    await mock.mockDevicesPaginated();
+  // Step 1: Register the mock BEFORE navigating
+  await mock.mockDevicesPaginated();
 
-    // Step 2: Go to Devices page
-    await pm.homePage.goToDevices();
+  // Step 2: Go to Devices page
+  await pm.homePage.goToDevices();
 
-    // Step 3: Verify first 10 devices on page 1
-    await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(10);
+  // Step 3: Verify first 10 devices on page 1
+  await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(10);
 
-    // Step 4: Click "Next" page
-    await pm.devices.clickNextButton();
+  // Step 4: Click "Next" page
+  await pm.devices.clickNextButton();
 
-    // Step 5: Verify remaining 4 devices on page 2
-    await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(4);
+  // Step 5: Verify remaining 4 devices on page 2
+  await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(4);
 });
 
-test('Create customer via UI using data from CSV file, delete via API', async ({auth}) => {
+test('Create customer via UI using data from CSV file, delete via API', async ({ auth }) => {
   // Read the CSV file
   const data = await readCsvFile('Data/Customers.csv');
   // Pick a random row from the file
@@ -128,7 +184,7 @@ test('Create customer via UI using data from CSV file, delete via API', async ({
 
 // Add test to create customer via API and delete via UI
 
-test('Upload image to Image Gallery', async ({auth}) => {
+test('Upload image to Image Gallery', async ({ auth }) => {
   await pm.homePage.goToImageGallery();
   // Add a random suffix so the table name is unique
   const uniqueSuffix = Math.floor(Math.random() * 10000);
@@ -144,8 +200,8 @@ test('Upload image to Image Gallery', async ({auth}) => {
 
 // Add test to download image file and cleanup
 
-test('Create dashboard', async ({auth}) => {
-  
+test('Create dashboard', async ({ auth }) => {
+
   // Create device
   const rndDeviceName = `Thermometer ${Math.floor(Math.random() * 10000) + 1}`;
   await api.createDevice(rndDeviceName, 'Sensor');
@@ -179,7 +235,7 @@ test('Create dashboard', async ({auth}) => {
   // delete dashboard
   await pm.dashboards.deleteDashboard(data);
   const rowDeleted = await pm.dashboards.actions.waitForRow('deleted', data.title);
-  expect(rowDeleted).toBe(true);  
+  expect(rowDeleted).toBe(true);
 
 })
 
