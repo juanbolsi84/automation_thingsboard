@@ -3,26 +3,27 @@ import CommonActions from "../Utilities/CommonActions.js";
 
 export default class Devices {
     constructor(page) {
+        this.page = page;
         this.actions = new CommonActions(page, 'Name'); //The 'Name' parameter passes the column name for calling findRowByCellValue in CommonActions
     }
 
     // Getters for locators
-    get addDevicePlusBtn() {return 'role=button >> text=add'};
-    get addDeviceOption() {return 'role=menuitem[name="Add new device"]'};
-    get dialogLocator() {return 'role=dialog >> text="Add new device"'};
-    get deviceName() {return 'role=textbox[name="Name"]'};
-    get deviceLabel() {return 'role=textbox[name="Label"]'};
-    get deviceProfileLocator() {return 'role=combobox[name="Device profile"]'}; 
-    get assignToCustomerLocator() {return 'role=combobox[name="Assign to customer"]'};
-    get deviceDescription() {return 'role=textbox[name="Description"]'};
-    get addDeviceBtn() {return 'role=button[name="Add"]'};
-    get closeButton() {return 'role=button[name="Close"]'};
+    get addDevicePlusBtn() {return this.page.locator('role=button >> text=add')};
+    get addDeviceOption() {return this.page.locator('role=menuitem[name="Add new device"]')};
+    get dialogLocator() {return this.page.locator('role=dialog >> text="Add new device"')};
+    get deviceName() {return this.page.locator('role=textbox[name="Name"]')};
+    get deviceLabel() {return this.page.locator('role=textbox[name="Label"]')};
+    get deviceProfileLocator() {return this.page.locator('role=combobox[name="Device profile"]')}; 
+    get assignToCustomerLocator() {return this.page.locator('role=combobox[name="Assign to customer"]')};
+    get deviceDescription() {return this.page.locator('role=textbox[name="Description"]')};
+    get addDeviceBtn() {return this.page.locator('role=button[name="Add"]')};
+    get closeButton() {return this.page.locator('role=button[name="Close"]')};
 
-    get deleteDeviceBtn() {return 'button:has-text("delete")'};
-    get confirmDelete() {return 'role=button[name="Yes"]'};
-    get confirmDeleteDialog() {return '.cdk-overlay-container'};
+    get deleteDeviceBtn() {return this.page.locator('button:has-text("delete")')};
+    get confirmDelete() {return this.page.locator('role=button[name="Yes"]')};
+    get confirmDeleteDialog() {return this.page.locator('.cdk-overlay-container')};
     
-    get nextButtonLocator() {return 'role=button[name="Next page"]'};
+    get nextButtonLocator() {return this.page.locator('role=button[name="Next page"]')};
 
 
     async createDevice({ name, label = '', profile = 'default', assignToCustomer = '', description = '' }) {
@@ -60,11 +61,11 @@ export default class Devices {
 
         // Confirm deletion in the dialog
         await this.actions.click(this.confirmDelete);
-        await this.actions.page.locator(this.confirmDelete).waitFor({state:'hidden'});
+        await this.confirmDelete.waitFor({state:'hidden'});
     }
 
     async clickNextButton(){
-        await this.actions.page.locator(this.nextButtonLocator).click();
+        await this.actions.click(this.nextButtonLocator);
     }
 
 }
