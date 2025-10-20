@@ -30,9 +30,8 @@ export default class Devices {
         await this.actions.waitForTableToLoad();
         await this.actions.click(this.addDevicePlusBtn);
         await this.actions.click(this.addDeviceOption);
-        const dialogLocator = this.actions.page.locator(this.dialogLocator);
-        await dialogLocator.waitFor({state:'visible'});
-        await this.actions.page.locator(this.deviceName).click(); // This click before filling the field makes tests stable. Without it, it may not fill the field reliably
+        await this.dialogLocator.waitFor({state:'visible'});
+        await this.actions.click(this.deviceName); // This click before filling the field makes tests stable. Without it, it may not fill the field reliably
         await this.actions.fill(this.deviceName, name);
         // Add an if statement to fill again if not properly filled on the first attempt
         await this.actions.fill(this.deviceLabel, label);
@@ -43,7 +42,7 @@ export default class Devices {
         await this.actions.fill(this.deviceDescription, description); 
         await this.actions.click(this.addDeviceBtn);
         await this.actions.click(this.closeButton);
-        await this.actions.page.locator(this.closeButton).waitFor({state:'hidden'});
+        await this.closeButton.waitFor({state:'hidden'});
 
     }
     
