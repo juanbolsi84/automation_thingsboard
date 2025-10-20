@@ -41,7 +41,16 @@ export default class Customers {
 
     }
 
-    async deleteCustomer(){
+    deleteCustomerBtn(rowLocator) {return rowLocator.locator('role=button[name="delete"]')};
+    get confirmDelete() {return this.page.locator('role=button[name="Yes"]')};
+
+    async deleteCustomer(customer){
+        await this.actions.waitForTableToLoad();
+        const rowLocator = await this.actions.findRowByCellValue(customer);
+        await this.deleteCustomerBtn(rowLocator).click();
+        await this.actions.click(this.confirmDelete);
+        await this.confirmDelete.waitFor({ state: 'hidden' });
 
     }
+
 }

@@ -43,8 +43,6 @@ export default class Assets {
         await this.actions.waitForTableToLoad();
         const rowLocator = await this.actions.findRowByCellValue(name);
         await this.deleteAssetBtn(rowLocator).click();
-        //const deleteBtn = await rowLocator.locator(this.deleteAssetBtn);
-        //await deleteBtn.click();
         await this.actions.click(this.confirmDelete);
         await this.confirmDelete.waitFor({ state: 'hidden' });
 
