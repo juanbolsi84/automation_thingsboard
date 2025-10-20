@@ -6,26 +6,25 @@ export default class Customers {
         this.actions = new CommonActions(page, 'Title'); // The 'Title' parameter passes the column name for calling findRowByCellValue in CommonActions
     }
 
-    get addCustomerBtn() {return 'role=button >> text=add'};
-    get dialogLocator() {return 'role=dialog >> text="Add customer"'};
-    get customerName() {return 'role=textbox[name="Title"]'};
-    get customerDescription() {return 'role=textbox[name="Description"]'};
-    get countryName() {return 'mat-dialog-container input[type="text"][formcontrolname="country"]'};
-    get city() {return 'role=textbox[name="City"]'};
-    get state_province() {return 'role=textbox[name="State / Province"]'};
-    get zip_postalCode() {return 'role=textbox[name="Zip / Postal Code"]'};
-    get address1() {return 'role=textbox[name="Address"]'};
-    get address2() {return 'role=textbox[name="Address 2"]'};
-    get countryPhone() {return 'mat-dialog-container mat-select[formcontrolname="country"]'};
-    get phone() {return 'role=textbox[name="Phone"]'};
-    get email() {return 'role=textbox[name="Email"]'};
-    get addBtn() {return 'role=button[name="Add"]'};
+    get addCustomerBtn() {return this.page.locator('role=button >> text=add')};
+    get dialogLocator() {return this.page.locator('role=dialog >> text="Add customer"')};
+    get customerName() {return this.page.locator('role=textbox[name="Title"]')};
+    get customerDescription() {return this.page.locator('role=textbox[name="Description"]')};
+    get countryName() {return this.page.locator('mat-dialog-container input[type="text"][formcontrolname="country"]')};
+    get city() {return this.page.locator('role=textbox[name="City"]')};
+    get state_province() {return this.page.locator('role=textbox[name="State / Province"]')};
+    get zip_postalCode() {return this.page.locator('role=textbox[name="Zip / Postal Code"]')};
+    get address1() {return this.page.locator('role=textbox[name="Address"]')};
+    get address2() {return this.page.locator('role=textbox[name="Address 2"]')};
+    get countryPhone() {return this.page.locator('mat-dialog-container mat-select[formcontrolname="country"]')};
+    get phone() {return this.page.locator('role=textbox[name="Phone"]')};
+    get email() {return this.page.locator('role=textbox[name="Email"]')};
+    get addBtn() {return this.page.locator('role=button[name="Add"]')};
 
 
     async createCustomer(data){
         await this.actions.click(this.addCustomerBtn);
-        const dialogLocator = this.actions.page.locator(this.dialogLocator);
-        await dialogLocator.waitFor({state:'visible'});
+        await this.dialogLocator.waitFor({state:'visible'});
         await this.actions.fill(this.customerName, data.Title);
         await this.actions.fill(this.customerDescription, data.Description);
         await this.actions.selectFromDropdown(this.countryName, data.Country);
@@ -36,7 +35,7 @@ export default class Customers {
         await this.actions.fill(this.address2, data['Address 2']);
         await this.actions.selectFromDropdown(this.countryPhone, data.Country);
         await this.actions.click(this.phone);
-        await this.actions.page.type(this.phone, data.Phone);
+        await this.phone.type(data.Phone);
         await this.actions.fill(this.email, data.Email);
         await this.actions.click(this.addBtn);
 
