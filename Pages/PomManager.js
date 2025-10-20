@@ -5,6 +5,7 @@ import Assets from "./Assets.js";
 import Customers from "./Customers.js";
 import ImageGallery from "./ImageGallery.js";
 import Dashboards from "./Dashboards.js"
+import ResetPw from "./ResetPw.js";
 
 export default class PomManager{
     constructor(page){
@@ -16,5 +17,6 @@ export default class PomManager{
     this.customers = new Customers(page);
     this.imageGallery = new ImageGallery(page);
     this.dashboards = new Dashboards(page);
+    this.forgotPW = new ResetPw(page);
     }
 }

@@ -29,66 +29,101 @@ test.describe('Login', () => {
     await expect(page).toHaveTitle('ThingsBoard | Home');
   });
 
-  test('Login with wrong credentials', async({page}) => {
+  test('Login with wrong credentials', async ({ page }) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login("JohnDoe@me.com", "WrongPW2025!");
 
     await expect(page).toHaveTitle('ThingsBoard | Login');
     await expect(page).toHaveURL(pm.loginPage.url);
-    
-    await expect(pm.loginPage.InvalidCredAlert()).toBeVisible();
-    
+
+    await expect(pm.loginPage.invalidMsg).toBeVisible();
+
     await pm.loginPage.closeInvalidMsg();
-    await expect(pm.loginPage.InvalidCredAlert()).not.toBeVisible();
+    await expect(pm.loginPage.invalidMsg).not.toBeVisible();
 
   })
 
-  test('Login with no username, correct password', async({page}) => {
+  test('Login with no username, correct password', async ({ page }) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login("", process.env.TB_PASSWORD || 'tenant');
     await expect(page).toHaveURL(pm.loginPage.url);
-    await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
+    await expect(pm.loginPage.invalidEmailFormat).toBeVisible();
 
   })
 
-  test('Login with correct username, incorrect password', async({page}) => {
+  test('Login with correct username, incorrect password', async ({ page }) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login(process.env.TB_USERNAME, "WRONGpw123!");
     await expect(page).toHaveURL(pm.loginPage.url);
-    await expect(pm.loginPage.InvalidCredAlert()).toBeVisible();
-    
+    await expect(pm.loginPage.invalidMsg).toBeVisible();
+
   })
 
-  test('Login with no username and no password', async({page}) => {
+  test('Login with no username and no password', async ({ page }) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login("", "");
     await expect(page).toHaveURL(pm.loginPage.url);
-    await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
-    
+    await expect(pm.loginPage.invalidEmailFormat).toBeVisible();
+
   })
 
-  test('Login with wrong username format', async ({page}) => {
+  test('Login with wrong username format', async ({ page }) => {
     await pm.loginPage.navigate();
     await pm.loginPage.login("JohnDoe.com", process.env.TB_PASSWORD);
     await expect(page).toHaveURL(pm.loginPage.url);
-    await expect(pm.loginPage.invalidEmailMsg()).toBeVisible();
+    await expect(pm.loginPage.invalidEmailFormat).toBeVisible();
 
   })
 
-  test('See password', async ({page}) => {
+  test('See password', async ({ page }) => {
     await pm.loginPage.navigate();
-    await expect(pm.loginPage.passwordLocator).toHaveAttribute('type', 'password');
+    await expect(pm.loginPage.password).toHaveAttribute('type', 'password');
     await pm.loginPage.togglePasswordVisibility();
-    await expect(pm.loginPage.passwordLocator).toHaveAttribute('type', 'text');
+    await expect(pm.loginPage.password).toHaveAttribute('type', 'text');
 
   })
+});
 
-  test('Forgot password', async ({page}) => {
+test.describe('Forgot Password', () => {
+
+  test('Reset password page', async ({ page }) => {
     await pm.loginPage.navigate();
+    await expect(pm.loginPage.forgotPW).toBeVisible();
+    await pm.loginPage.clickForgotPW();
+    await expect(page).toHaveTitle(pm.forgotPW.forgotPWPageName);
+    await expect(page).toHaveURL(pm.forgotPW.forgotPWUrl);
 
   })
 
-})
+  test('Request PW reset', async ({ page }) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.clickForgotPW();
+    await pm.forgotPW.requestPwReset("JohnDoe@me.com");
+    await expect(pm.forgotPW.confirmationMsg).toBeVisible();
+    await pm.forgotPW.closeConfirmationMsg();
+    await expect(pm.forgotPW.confirmationMsg).not.toBeVisible();
+
+  })
+
+  test('Wrong email format', async ({page}) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.clickForgotPW();
+    await pm.forgotPW.requestPwReset("JohnDoe");
+    await expect(pm.forgotPW.invalidEmailFormat).toBeVisible();
+
+  })
+
+  test('Cancel reset', async ({ page }) => {
+    await pm.loginPage.navigate();
+    await pm.loginPage.clickForgotPW();
+    await pm.forgotPW.cancel();
+    await expect(page).toHaveURL(pm.loginPage.url);
+
+  })
+
+});
+
+
 
 test.describe('Devices', () => {
   test('Create a device via UI, delete via API', async ({ auth }) => {
