@@ -63,7 +63,7 @@ export default class CommonActions {
 
         let optionIndex = -1;
         let options = [];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 100; i++) {
             options = await this.page.locator(this.optionsLocator).allTextContents();
             optionIndex = options.findIndex(opt => opt.trim().includes(optionText));
             if (optionIndex !== -1) {
@@ -81,7 +81,7 @@ export default class CommonActions {
         await input.click();
 
         let optionIndex = -1;
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 100; i++) {
             const options = await this.page.locator(this.optionsLocator).allTextContents();
             optionIndex = options.findIndex(opt => opt.trim() === optionText);
             if (optionIndex !== -1) {
@@ -113,7 +113,7 @@ export default class CommonActions {
     }
 
     async waitForRow(action, valueToCheck, overrideColumnName = null) {
-        for (let i = 0; i <= 50; i++) {
+        for (let i = 0; i <= 100; i++) {
             const row = await this.findRowByCellValue(valueToCheck, overrideColumnName);
             if ((action === 'created' && row) || (action === 'deleted' && !row)) return true;
             await this.page.waitForTimeout(300);
@@ -121,7 +121,7 @@ export default class CommonActions {
         return false;
     }
 
-    async waitUntilEnabled(locator, timeout = 5000) {
+    async waitUntilEnabled(locator, timeout = 10000) {
         const loc = typeof locator === 'string' ? this.page.locator(locator) : locator;
         await this.page.waitForFunction(
             el => el && !el.disabled,

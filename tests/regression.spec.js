@@ -123,8 +123,6 @@ test.describe('Forgot Password', () => {
 
 });
 
-
-
 test.describe('Devices', () => {
   test('Create a device via UI, delete via API', async ({ auth }) => {
     await pm.homePage.goToDevices();
@@ -187,8 +185,6 @@ test.describe('Assets', () => {
     expect(assetDeleted).toBe(true);
   });
 });
-
-
 
 test('Devices page shows 14 mocked devices with pagination', async ({ page, auth }) => {
   const mock = new MockUtil(page);
