@@ -152,6 +152,17 @@ test.describe('Devices', () => {
     const rowDeleted = await pm.devices.actions.waitForRow('deleted', rndDeviceName);
     expect(rowDeleted).toBe(true);
   });
+
+  test('Assing device to customer', async ({auth}) => {
+
+  })
+
+  test('Connect device', async ({auth}) => {
+    
+  })
+
+
+
 });
 
 test.describe('Assets', () => {
