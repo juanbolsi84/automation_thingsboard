@@ -6,10 +6,10 @@ export default class ImageGallery {
         this.actions = new CommonActions(page, 'Name');
     }
 
-    get addImageBtn() { return 'role=button[name="Upload image"]' };;
-    get fileInput() { return 'input[type="file"]' };
+    get addImageBtn() { return this.page.locator('role=button[name="Upload image"]') };;
+    get fileInput() { return this.page.locator('input[type="file"]')};
     get fileLocation() { return 'Data/TopCat.jpg' };
-    get uploadButton() { return 'role=button[name="Upload"]' };
+    get uploadButton() { return this.page.locator('role=button[name="Upload"]') };
 
     async uploadImage(uniqueSuffix = null) {
 
@@ -33,22 +33,20 @@ export default class ImageGallery {
             };
         }
 
-        await this.page.locator(this.fileInput).setInputFiles(uploadName);
+        await this.fileInput.setInputFiles(uploadName);
         await this.actions.waitUntilEnabled(this.uploadButton);
         await this.actions.click(this.uploadButton);
     }
 
-    get deleteBtn() {return 'button:has-text("delete")'};
-    get confirmDelete() {return 'role=button[name="Yes"]'};
+    deleteBtn(rowLocator) {return rowLocator.locator('button:has-text("delete")')};
+    get confirmDelete() {return this.page.locator('role=button[name="Yes"]')};
 
 
     async deleteImage(imageName){
        const rowLocator = await this.actions.findRowByCellValue(imageName);
-       const deleteBtn = await rowLocator.locator(this.deleteBtn);
-       await deleteBtn.click();
+       await this.deleteBtn(rowLocator).click();
        await this.actions.click(this.confirmDelete);
-       await this.actions.page.locator(this.confirmDelete).waitFor({state: 'hidden'});
-       
+       await this.confirmDelete.waitFor({state: 'hidden'});
 
     }
 

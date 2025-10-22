@@ -23,18 +23,18 @@ export default class Assets {
 
     async createAsset({ name, label = '', assetProfile = 'default', assignToCustomer = '', description = '' }) {
         await this.actions.waitForTableToLoad();
-        await this.actions.click(this.addAssetPlusBtn); // click + button
-        await this.actions.click(this.addAssetOption); //click add new asset 
-        await this.dialogLocator.waitFor({ state: 'visible' }); // wait for dialog to be visible
+        await this.actions.click(this.addAssetPlusBtn); 
+        await this.actions.click(this.addAssetOption); 
+        await this.dialogLocator.waitFor({ state: 'visible' }); 
         await this.actions.click(this.assetName); // this makes the tests more stable as sometimes it fills too fast
-        await this.actions.fill(this.assetName, name); //fill name        
-        await this.actions.fill(this.assetLabel, label); //fill label        
-        await this.actions.selectFromDropdown(this.assetProfileLocator, assetProfile); //fill assetProfile        
+        await this.actions.fill(this.assetName, name);       
+        await this.actions.fill(this.assetLabel, label);        
+        await this.actions.selectFromDropdown(this.assetProfileLocator, assetProfile);        
         if (assignToCustomer != '') {
             await this.actions.selectFromDropdown(this.assignToCustomerLocator, assignToCustomer)
         }
-        await this.actions.fill(this.assetDescription, description); //fill description
-        await this.actions.click(this.addAssetBtn); //click add button
+        await this.actions.fill(this.assetDescription, description); 
+        await this.actions.click(this.addAssetBtn); 
         await this.addAssetBtn.waitFor({ state: 'hidden' });
 
     }

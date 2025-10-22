@@ -227,7 +227,7 @@ test('Upload image to Image Gallery', async ({ auth }) => {
   // Add a random suffix so the table name is unique
   const uniqueSuffix = Math.floor(Math.random() * 10000);
   await pm.imageGallery.uploadImage(uniqueSuffix);
-  const rowCreated = await pm.devices.actions.waitForRow('created', `TopCat_${uniqueSuffix}.jpg`); //need to add the file name somewhere else. ENV file?
+  const rowCreated = await pm.devices.actions.waitForRow('created', `TopCat_${uniqueSuffix}.jpg`);
   expect(rowCreated).toBe(true);
 
   //need to add a way of deleting the row afterwards
