@@ -4,12 +4,6 @@ export default class CommonActions {
         this.columnName = columnName;
     }
 
-    // Table element locators
-    get optionsLocator() { return 'mat-option'; }
-    get headersLocator() { return 'mat-header-cell'; }
-    get rowsLocator() { return 'mat-row'; }
-    get cellLocator() { return 'mat-cell'; }
-
     async navigate(url) {
         await this.page.goto(url);
     }
@@ -47,6 +41,8 @@ export default class CommonActions {
             await this.click(toggleLocator);
         }
     }
+
+    get optionsLocator() { return 'mat-option'; }
 
     async selectOption(locator, option) {
         if (typeof locator === 'string') {
@@ -93,23 +89,42 @@ export default class CommonActions {
         }
     }
 
-    async findRowByCellValue(valueToCheck, overrideColumnName = null) {
+    get headersLocator() { return this.page.locator('mat-header-cell') };
+    get rowsLocator() { return this.page.locator('mat-row') };
+    get cellLocator() { return this.page.locator('mat-cell') };
+    get headersLocatorInDrawer() { return this.page.locator('mat-drawer mat-header-cell') };
+    get rowsLocatorInDrawer() { return this.page.locator('mat-drawer mat-row') };
+
+    async findRowByCellValue(valueToCheck, overrideColumnName = null, inDrawer = false) {
+
+        // Use overrideColumnName if provided, or this.column if no argument provided
         const columnName = overrideColumnName || this.columnName;
 
-        const headers = await this.page.locator(this.headersLocator).allTextContents();
-        const colIndex = headers.findIndex(h => h.trim() === columnName);
+        //Evaluate if the table is inside a drawer and pick the selectors accordingly
+        const headersLocator = inDrawer ? this.headersLocatorInDrawer : this.headersLocator;
+        const rowsLocator = inDrawer ? this.rowsLocatorInDrawer : this.rowsLocator;
+
+        // Get the text of each header and add them to an array
+        const headers = await headersLocator.allTextContents();
+
+        // Find the index in the array for the colum name we want. If the column we passed is not found, throw an error for debugging
+        const colIndex = headers.findIndex(h => h.trim() == columnName);
         if (colIndex === -1) throw new Error(`Column "${columnName}" not found`);
 
-        const rows = this.page.locator(this.rowsLocator);
-        const rowCount = await rows.count();
+        // Count the number of rows
+        const rowCount = await rowsLocator.count();
 
+        // Go through all rows for the column and check if they match the value we passed
         for (let i = 0; i < rowCount; i++) {
-            const cellTextRaw = await rows.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
+            const cellTextRaw = await rowsLocator.nth(i).locator(this.cellLocator).nth(colIndex).textContent();
             const cellText = cellTextRaw?.trim();
-            if (cellText === valueToCheck) return rows.nth(i);
+            if (cellText?.includes(valueToCheck.toString())) {
+                return rowsLocator.nth(i);
+            }
         }
 
         return null;
+
     }
 
     async waitForRow(action, valueToCheck, overrideColumnName = null) {

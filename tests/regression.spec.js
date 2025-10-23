@@ -153,13 +153,53 @@ test.describe('Devices', () => {
     expect(rowDeleted).toBe(true);
   });
 
-  test('Assing device to customer', async ({auth}) => {
+  test('Devices pagination', async ({ page, auth }) => {
+  const mock = new MockUtil(page);
 
-  })
+  // Step 1: Register the mock BEFORE navigating
+  await mock.mockDevicesPaginated();
+
+  // Step 2: Go to Devices page
+  await pm.homePage.goToDevices();
+
+  // Step 3: Verify first 10 devices on page 1
+  await expect(pm.devices.actions.rowsLocator).toHaveCount(10);
+
+  // Step 4: Click "Next" page
+  await pm.devices.clickNextButton();
+
+  // Step 5: Verify remaining 4 devices on page 2
+  await expect(pm.devices.actions.rowsLocator).toHaveCount(4);
+});
 
   test('Connect device', async ({auth}) => {
+    await pm.homePage.goToDevices();
+
+    const newDevice = {
+      name: `Thermostat ${Math.floor(Math.random() * 10000) + 1}`,
+      label: 'Machine Room',
+      assignToCustomer: '',
+    };
+
+    await pm.devices.createDevice(newDevice);
+
+    const deviceToken = await api.findDeviceToken(newDevice.name);
+    const temperature = 25;
+    await api.sendTelemetry(deviceToken, temperature); 
+
+    //validate state active
     
-  })
+    await pm.devices.deviceDetails(newDevice.name);
+    await pm.devices.latestTelemetry();
+
+    const telemetry = await pm.devices.actions.findRowByCellValue(temperature, 'Value', true);
+    expect(telemetry).toBeTruthy();
+
+
+    
+    
+
+  });
 
 
 
@@ -197,24 +237,6 @@ test.describe('Assets', () => {
   });
 });
 
-test('Devices page shows 14 mocked devices with pagination', async ({ page, auth }) => {
-  const mock = new MockUtil(page);
-
-  // Step 1: Register the mock BEFORE navigating
-  await mock.mockDevicesPaginated();
-
-  // Step 2: Go to Devices page
-  await pm.homePage.goToDevices();
-
-  // Step 3: Verify first 10 devices on page 1
-  await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(10);
-
-  // Step 4: Click "Next" page
-  await pm.devices.clickNextButton();
-
-  // Step 5: Verify remaining 4 devices on page 2
-  await expect(page.locator(pm.devices.actions.rowsLocator)).toHaveCount(4);
-});
 
 test('Create customer via UI using data from CSV file, delete via API', async ({ auth }) => {
   // Read the CSV file
@@ -229,7 +251,7 @@ test('Create customer via UI using data from CSV file, delete via API', async ({
   const customerCreated = await pm.customers.actions.waitForRow('created', customer.Title);
   expect(customerCreated).toBe(true);
   await api.deleteCustomerIfExists(customer.Title)
-})
+});
 
 // Add test to create customer via API and delete via UI
 

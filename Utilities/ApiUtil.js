@@ -114,7 +114,7 @@ export default class ApiUtil {
 
   async deleteCustomerIfExists(customerName){
     const searchResp = await this.apiContext.get(
-      `api/tenant/customers?customerTitle=${encodeURIComponent(customerName)}`,
+      `api/tenant/customers?customerTitle=${encodeURIComponent(customerName)}`, 
       {headers: {'X-Authorization': `Bearer ${this.token}`}}
     );
 
@@ -124,4 +124,39 @@ export default class ApiUtil {
         headers: {'X-Authorization': `Bearer ${this.token}`}}
     )};
   }
+
+  /* Powershell command for device telemetry:
+    curl.exe -v -X POST http://localhost:8080/api/v1/ABGYs8NOs2o27yX4e7GZ/telemetry -H "Content-Type: application/json" -d '{\"temperature\":25}' */
+
+  async findDeviceToken(deviceName){
+    // 1- Get the device's id from the device name
+    const deviceInfo = await this.apiContext.get(
+      `api/tenant/devices?deviceName=${encodeURIComponent(deviceName)}`,
+      {headers: {'X-Authorization': `Bearer ${this.token}`}}
+    );
+
+    const deviceInfoData = await deviceInfo.json();
+    const deviceId = deviceInfoData?.id?.id;
+
+    // 2- Get the device's token, using its id
+    const deviceCredentials = await this.apiContext.get(
+      `api/device/${encodeURIComponent(deviceId)}/credentials`,
+      {headers: {'X-Authorization': `Bearer ${this.token}`}}
+    );
+
+    const deviceCredentialsData = await deviceCredentials.json();
+    const deviceToken = deviceCredentialsData?.credentialsId
+
+    return deviceToken;
+      
+    };
+
+  async sendTelemetry(deviceToken, temperatureValue){
+    await this.apiContext.post(`api/v1/${deviceToken}/telemetry`, 
+      {headers: {'Content-Type': 'application/json'}, 
+      data: {temperature: temperatureValue}}
+    );
+
+  }
+
 }

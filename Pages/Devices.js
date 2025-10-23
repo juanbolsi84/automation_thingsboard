@@ -67,4 +67,26 @@ export default class Devices {
         await this.actions.click(this.nextButtonLocator);
     }
 
+    /* Powershell command for device telemetry:
+    curl.exe -v -X POST http://localhost:8080/api/v1/ABGYs8NOs2o27yX4e7GZ/telemetry -H "Content-Type: application/json" -d '{\"temperature\":25}' */
+
+    
+    
+    async deviceDetails(deviceName){
+        const row = await this.actions.findRowByCellValue(deviceName);
+        await this.actions.click(row);
+    }
+
+    get latestTelemetryTab() {return this.page.locator('role=tab[name="Latest telemetry"]')};
+
+    async latestTelemetry(){
+        await this.latestTelemetryTab.waitFor({state: 'visible'});
+        await this.actions.click(this.latestTelemetryTab);
+        //await this.actions.findRowByCellValue(temperature, value)
+    }
+
+
+    
+
+
 }
