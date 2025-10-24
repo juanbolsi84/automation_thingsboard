@@ -127,6 +127,25 @@ export default class CommonActions {
 
     }
 
+    async findCellValue(row, headerName, inDrawer = false) {
+        // Evaluate what locators to use, depending on whether the table is inside a drawer
+        const headersLocator = inDrawer ? this.headersLocatorInDrawer : this.headersLocator;
+
+        // Get the text contents of all headers into an array
+        const headers = await headersLocator.allTextContents();
+
+        //Find the column number of the header we passed to the function
+        const colIndex = headers.findIndex(h => h.trim() == headerName);
+        if (colIndex === -1) throw new Error(`Column "${headerName}" not found`);
+
+        // Get the value of the cell we want
+        const rawCellValue = await row.locator(this.cellLocator).nth(colIndex).textContent();
+        const cellValue = rawCellValue.trim();
+
+        return cellValue;
+
+    }
+
     async waitForRow(action, valueToCheck, overrideColumnName = null) {
         for (let i = 0; i <= 100; i++) {
             const row = await this.findRowByCellValue(valueToCheck, overrideColumnName);
@@ -148,4 +167,25 @@ export default class CommonActions {
     async waitForTableToLoad() {
         await this.page.locator('text=Loading...').waitFor({ state: 'hidden' });
     }
+
+    async waitForApiResponseAfterAction(endpointSubstring, refreshAction, statusCode = 200, timeout = 10000) {
+    // Attach listener first
+    const [response] = await Promise.all([
+        this.page.waitForResponse(
+            response =>
+                response.url().includes(endpointSubstring) &&
+                response.status() === statusCode,
+            { timeout }
+        ),
+        // Trigger the UI action *after listener is attached*
+        (async () => {
+            await refreshAction();
+        })()
+    ]);
+
+    return response;
+}
+
+
+
 }

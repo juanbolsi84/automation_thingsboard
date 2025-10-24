@@ -82,7 +82,20 @@ export default class Devices {
     async latestTelemetry(){
         await this.latestTelemetryTab.waitFor({state: 'visible'});
         await this.actions.click(this.latestTelemetryTab);
-        //await this.actions.findRowByCellValue(temperature, value)
+
+    }
+
+    get closeDeviceDetailsBtn() {return this.page.locator('role=button >> text=close')};
+
+    async closeDetailsPanel(){
+        await this.actions.click(this.closeDeviceDetailsBtn);
+        await this.closeDeviceDetailsBtn.waitFor({state:'hidden'});
+    }
+
+    get refreshBtn() {return this.page.locator('role=button >> text=refresh')};
+
+    async refreshTable(){
+        await this.actions.click(this.refreshBtn);
     }
 
 

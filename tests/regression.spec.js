@@ -185,9 +185,7 @@ test.describe('Devices', () => {
 
     const deviceToken = await api.findDeviceToken(newDevice.name);
     const temperature = 25;
-    await api.sendTelemetry(deviceToken, temperature); 
-
-    //validate state active
+    await api.sendTelemetry(deviceToken, temperature);
     
     await pm.devices.deviceDetails(newDevice.name);
     await pm.devices.latestTelemetry();
@@ -195,9 +193,20 @@ test.describe('Devices', () => {
     const telemetry = await pm.devices.actions.findRowByCellValue(temperature, 'Value', true);
     expect(telemetry).toBeTruthy();
 
+    //close details panel
+    await pm.devices.closeDetailsPanel();
 
-    
-    
+    // Refresh table and wait for API response and table to load
+    await pm.devices.actions.waitForApiResponseAfterAction('api/tenant/deviceInfos', () => pm.devices.refreshTable());
+    await pm.devices.actions.waitForTableToLoad();
+
+    // Validate that the device shows as 'Active'
+    const row = await pm.devices.actions.findRowByCellValue(newDevice.name);
+    const status = await pm.devices.actions.findCellValue(row, 'State');
+    expect(status).toBe('Active');
+
+    // Cleanup via API
+    await api.deleteDeviceIfExists(newDevice.name);    
 
   });
 
