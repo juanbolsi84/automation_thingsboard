@@ -1,9 +1,14 @@
 {
-  "name": "hahn-automation",
+  "name": "thingsboard-automation",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "start-thingsboard": "docker-compose up -d",
+    "stop-thingsboard": "docker-compose down",
+    "test": "npx playwright test",
+    "test:local": "npm run start-thingsboard && npx playwright test && npm run stop-thingsboard"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",

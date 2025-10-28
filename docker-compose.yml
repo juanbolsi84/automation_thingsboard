@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  thingsboard:
+    image: thingsboard/tb-postgres
+    container_name: thingsboard
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "1883:1883"
+      - "5683-5688:5683-5688/udp"
+    environment:
+      TB_QUEUE_TYPE: in-memory
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/thingsboard
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      TB_LICENSE_SECRET: "put-your-secret-here"
+      TB_LICENSE_INSTANCE_DATA_FILE: "/data/.license"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14
+    container_name: tb-postgres
+    environment:
+      POSTGRES_DB: thingsboard
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - tb-data:/var/lib/postgresql/data
+
+volumes:
+  tb-data:
